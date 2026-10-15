@@ -940,7 +940,7 @@ h3 {
     gap: 12px;
   }
   .machine {
-    width: min(calc(100svh - 40px), calc(100vw - 210px));
+    width: min(calc(100svh - 78px), calc(100vw - 210px));
   }
   .machine-footer {
     display: none;

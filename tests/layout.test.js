@@ -57,6 +57,8 @@ try {
     assert.equal(metrics.bodyOverflow, "hidden"); assertions++;
     assert.equal(metrics.touchAction, "none"); assertions++;
     assert.ok(metrics.music.bottom <= metrics.masthead.bottom, `Music control stays inside header at ${width}x${height}`); assertions++;
+    assert.ok(metrics.machine.y >= metrics.masthead.bottom, `machine stays below header at ${width}x${height}`); assertions++;
+    assert.ok(metrics.machine.bottom <= height, `complete machine stays visible at ${width}x${height}`); assertions++;
     for (const button of metrics.buttons) {
       assert.ok(button.width >= 48 && button.height >= 48, `48px thumb target at ${width}x${height}: ${JSON.stringify(button)}`); assertions++;
       assert.ok(button.right <= width && button.bottom <= height, `direction button visible at ${width}x${height}`); assertions++;

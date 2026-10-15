@@ -33,7 +33,7 @@ It verifies gameplay startup, music's post-interaction start and one-context lif
 npm run test:layout
 ```
 
-Current suite: **98 assertions** at the same six required viewports. It verifies a square practical-size board, no horizontal or vertical page overflow, hidden page scrolling, disabled touch panning, the Music control contained in the header, four 48 px or larger direction targets, every target inside the viewport, the portrait D-pad immediately after the machine, and the short-landscape D-pad adjacent to it.
+Current suite: **110 assertions** at the same six required viewports. It verifies a square practical-size board, no horizontal or vertical page overflow, hidden page scrolling, disabled touch panning, the Music control contained in the header, the complete game machine contained below it, four 48 px or larger direction targets, every target inside the viewport, the portrait D-pad immediately after the machine, and the short-landscape D-pad adjacent to it.
 
 `npm run test:all` runs all three suites serially after a server is already running. Screenshots are written to ignored `test-results/`; the current README screenshot is `assets/gameplay.png` and was freshly captured from active local gameplay at 1366×768.
 
