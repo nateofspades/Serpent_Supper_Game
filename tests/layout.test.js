@@ -13,6 +13,7 @@ const viewports = [
   [600, 600],
   [700, 600],
   [800, 700],
+  [932, 430],
 ];
 const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
 const errors = [];
@@ -54,7 +55,7 @@ try {
       };
     });
     assert.ok(Math.abs(metrics.board.width - metrics.board.height) < 2, `square board at ${width}x${height}`); assertions++;
-    assert.ok(metrics.board.width >= (width <= 844 ? 210 : 280), `board remains practical at ${width}x${height}: ${metrics.board.width}`); assertions++;
+    assert.ok(metrics.board.width >= (width <= 1024 ? 210 : 280), `board remains practical at ${width}x${height}: ${metrics.board.width}`); assertions++;
     assert.ok(metrics.scrollWidth <= width, `no horizontal overflow at ${width}x${height}`); assertions++;
     assert.ok(metrics.scrollHeight <= height, `no vertical overflow at ${width}x${height}: ${metrics.scrollHeight}`); assertions++;
     assert.equal(metrics.bodyOverflow, "hidden"); assertions++;
@@ -66,10 +67,10 @@ try {
       assert.ok(button.width >= 48 && button.height >= 48, `48px thumb target at ${width}x${height}: ${JSON.stringify(button)}`); assertions++;
       assert.ok(button.right <= width && button.bottom <= height, `direction button visible at ${width}x${height}`); assertions++;
     }
-    if (width <= 844 && !(width >= 500 && height <= 780)) {
+    if (width <= 1024 && !(width >= 500 && height <= 780)) {
       assert.ok(metrics.dpad.y >= metrics.machine.bottom, `D-pad follows machine at ${width}x${height}`); assertions++;
       assert.ok(metrics.dpad.y - metrics.machine.bottom <= 18, `D-pad is immediately below machine at ${width}x${height}`); assertions++;
-    } else if (width <= 844) {
+    } else if (width <= 1024) {
       assert.ok(metrics.dpad.x >= metrics.machine.right, `landscape D-pad is adjacent to the machine at ${width}x${height}`); assertions++;
     }
     await page.screenshot({ path: `test-results/layout-${width}x${height}.png` });
