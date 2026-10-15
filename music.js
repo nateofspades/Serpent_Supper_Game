@@ -26,7 +26,8 @@ export class MusicController {
     this.activated = false;
     this.nextStep = 0;
     this.offset = 0;
-    this.origin = 0;
+    this.timelineOrigin = 0;
+    this.scheduleOrigin = 0;
   }
 
   #readPreference() {
@@ -51,7 +52,9 @@ export class MusicController {
 
   get position() {
     if (!this.context) return this.offset;
-    return (this.offset + Math.max(0, this.context.currentTime - this.origin)) % LOOP_SECONDS;
+    return (
+      this.offset + Math.max(0, this.context.currentTime - this.timelineOrigin)
+    ) % LOOP_SECONDS;
   }
 
   async activate() {
@@ -82,11 +85,13 @@ export class MusicController {
     }
     if (this.getHidden()) {
       this.offset = this.position;
-      this.origin = this.context.currentTime;
+      this.timelineOrigin = this.context.currentTime;
       if (this.context.state === "running") await this.context.suspend().catch(() => {});
     } else if (this.enabled && this.activated) {
       await this.context.resume().catch(() => {});
-      this.origin = this.context.currentTime;
+      this.timelineOrigin = this.context.currentTime;
+      this.#resetSchedule();
+      this.#schedule();
     }
   }
 
@@ -116,8 +121,8 @@ export class MusicController {
         this.master = this.context.createGain();
         this.master.gain.setValueAtTime(this.enabled ? 0.14 : 0, this.context.currentTime);
         this.master.connect(this.context.destination);
-        this.origin = this.context.currentTime;
-        this.nextStep = Math.floor(this.offset / STEP);
+        this.timelineOrigin = this.context.currentTime;
+        this.#resetSchedule();
         this.context.addEventListener?.("statechange", () => {
           if (this.context?.state === "interrupted") this.context.resume().catch(() => {});
         });
@@ -132,6 +137,12 @@ export class MusicController {
       await this.context.resume().catch(() => {});
     }
     this.#schedule();
+  }
+
+  #resetSchedule() {
+    if (!this.context) return;
+    this.nextStep = Math.floor(this.offset / STEP);
+    this.scheduleOrigin = this.context.currentTime - this.offset;
   }
 
   #note(frequency, when, duration, type, volume, detune = 0) {
@@ -153,9 +164,9 @@ export class MusicController {
   #schedule() {
     if (!this.context || this.context.state === "closed") return;
     const horizon = this.context.currentTime + 0.6;
-    while (this.origin + this.nextStep * STEP < horizon) {
+    while (this.scheduleOrigin + this.nextStep * STEP < horizon) {
       const index = this.nextStep % 32;
-      const when = this.origin + this.nextStep * STEP;
+      const when = this.scheduleOrigin + this.nextStep * STEP;
       if (index % 2 === 0) {
         const bass = BASS[Math.floor(index / 4) % BASS.length];
         this.#note(bass, when, 0.31, "sawtooth", 0.11);
@@ -171,7 +182,7 @@ export class MusicController {
       this.nextStep += 1;
       if (this.nextStep >= 32) {
         this.nextStep = 0;
-        this.origin += LOOP_SECONDS;
+        this.scheduleOrigin += LOOP_SECONDS;
       }
     }
   }

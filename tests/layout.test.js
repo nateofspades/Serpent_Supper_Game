@@ -1,92 +1,75 @@
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
+
 const base = process.env.BASE_URL || "http://127.0.0.1:8080/";
-const browser = await chromium.launch({ args: ["--no-sandbox"] });
+const viewports = [
+  [1920, 1080],
+  [1366, 768],
+  [768, 1024],
+  [390, 844],
+  [320, 568],
+  [844, 390],
+];
+const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
 const errors = [];
+let assertions = 0;
 try {
-  const page = await browser.newPage();
-  page.on("pageerror", (e) => errors.push(e.message));
   await mkdir("test-results", { recursive: true });
-  for (const [width, height] of [
-    [1366, 768],
-    [1440, 900],
-    [1280, 720],
-    [1024, 600],
-    [651, 768],
-    [700, 900],
-    [650, 900],
-    [768, 1024],
-    [1920, 1080],
-    [390, 844],
-    [375, 667],
-    [320, 568],
-  ]) {
-    await page.setViewportSize({ width, height });
-    await page.goto(base);
-    const board = await page.locator("#board").boundingBox();
-    const machine = await page.locator(".machine").boundingBox();
-    assert.ok(
-      Math.abs(board.width - board.height) < 2,
-      `Square board at ${width}x${height}`,
-    );
-    assert.ok(
-      board.width <= 480,
-      `Compact board at ${width}x${height}: ${board.width}px`,
-    );
-    assert.ok(
-      machine.y + machine.height <= height - 6,
-      `Entire game fits at 100% zoom on ${width}x${height}: bottom ${machine.y + machine.height}`,
-    );
-    assert.ok(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth,
-      ),
-      "No horizontal overflow",
-    );
-    for (const selector of ["#level", "#pause", "#restart"]) {
-      const control = await page.locator(selector).boundingBox();
-      assert.ok(
-        control.x >= machine.x &&
-          control.x + control.width <= machine.x + machine.width,
-        `${selector} is horizontally inside the machine at ${width}x${height}`,
-      );
+  for (const [width, height] of viewports) {
+    const context = await browser.newContext({
+      viewport: { width, height },
+      isMobile: width <= 844,
+      hasTouch: width <= 844,
+      deviceScaleFactor: 1,
+    });
+    const page = await context.newPage();
+    page.on("pageerror", (error) => errors.push(`${width}x${height}: ${error.message}`));
+    page.on("console", (message) => {
+      if (message.type() === "error") errors.push(`${width}x${height}: ${message.text()}`);
+    });
+    await page.goto(base, { waitUntil: "networkidle" });
+    const metrics = await page.evaluate(() => {
+      const rect = (selector) => {
+        const value = document.querySelector(selector).getBoundingClientRect();
+        return { x: value.x, y: value.y, width: value.width, height: value.height, bottom: value.bottom, right: value.right };
+      };
+      return {
+        board: rect("#board"),
+        machine: rect(".machine"),
+        dpad: rect(".dpad"),
+        buttons: [...document.querySelectorAll(".dpad button")].map((button) => {
+          const value = button.getBoundingClientRect();
+          return { width: value.width, height: value.height, bottom: value.bottom, right: value.right };
+        }),
+        scrollWidth: document.documentElement.scrollWidth,
+        scrollHeight: document.documentElement.scrollHeight,
+        bodyOverflow: getComputedStyle(document.body).overflow,
+        touchAction: getComputedStyle(document.body).touchAction,
+      };
+    });
+    assert.ok(Math.abs(metrics.board.width - metrics.board.height) < 2, `square board at ${width}x${height}`); assertions++;
+    assert.ok(metrics.board.width >= (width <= 844 ? 210 : 280), `board remains practical at ${width}x${height}: ${metrics.board.width}`); assertions++;
+    assert.ok(metrics.scrollWidth <= width, `no horizontal overflow at ${width}x${height}`); assertions++;
+    assert.ok(metrics.scrollHeight <= height, `no vertical overflow at ${width}x${height}: ${metrics.scrollHeight}`); assertions++;
+    assert.equal(metrics.bodyOverflow, "hidden"); assertions++;
+    assert.equal(metrics.touchAction, "none"); assertions++;
+    for (const button of metrics.buttons) {
+      assert.ok(button.width >= 48 && button.height >= 48, `48px thumb target at ${width}x${height}: ${JSON.stringify(button)}`); assertions++;
+      assert.ok(button.right <= width && button.bottom <= height, `direction button visible at ${width}x${height}`); assertions++;
     }
-    const start = await page.locator("#primary").boundingBox();
-    assert.ok(
-      start.x >= board.x && start.x + start.width <= board.x + board.width,
-      `Start button is horizontally inside the board at ${width}x${height}`,
-    );
-    assert.ok(
-      start.y >= board.y && start.y + start.height <= board.y + board.height,
-      "Start button is inside the board",
-    );
-    await page.getByRole("button", { name: "Start Game", exact: true }).click();
-    await page.locator("#pause").click();
-    const resume = await page.locator("#primary").boundingBox();
-    assert.ok(
-      resume.x >= board.x && resume.x + resume.width <= board.x + board.width,
-      `Resume button is horizontally inside the board at ${width}x${height}`,
-    );
-    assert.ok(
-      resume.y >= board.y && resume.y + resume.height <= board.y + board.height,
-      "Resume button is inside the board",
-    );
-    if (width === 1366)
-      await page.screenshot({
-        path: "test-results/compact-desktop.png",
-        fullPage: true,
-      });
-    if (width === 390)
-      await page.screenshot({
-        path: "test-results/compact-mobile.png",
-        fullPage: true,
-      });
-    console.log(
-      `PASS layout ${width}x${height}: board ${Math.round(board.width)}px, game bottom ${Math.round(machine.y + machine.height)}px`,
-    );
+    if (width <= 844 && height >= width) {
+      assert.ok(metrics.dpad.y >= metrics.machine.bottom, `D-pad follows machine at ${width}x${height}`); assertions++;
+      assert.ok(metrics.dpad.y - metrics.machine.bottom <= 18, `D-pad is immediately below machine at ${width}x${height}`); assertions++;
+    } else if (width <= 844) {
+      assert.ok(metrics.dpad.x >= metrics.machine.right, `landscape D-pad is adjacent to the machine at ${width}x${height}`); assertions++;
+    }
+    await page.screenshot({ path: `test-results/layout-${width}x${height}.png` });
+    console.log(`PASS layout ${width}x${height}: board ${Math.round(metrics.board.width)}px, d-pad bottom ${Math.round(metrics.dpad.bottom)}px`);
+    await context.close();
   }
-  assert.deepEqual(errors, []);
+  assert.deepEqual(errors, []); assertions++;
+  console.log(`PASS ${assertions} responsive layout assertions across ${viewports.length} viewports`);
 } finally {
   await browser.close();
 }

@@ -139,4 +139,27 @@ describe("MusicController", () => {
     await controller.handleInterruption();
     expect(FakeContext.instances).toHaveLength(2);
   });
+
+  it("resumes scheduling immediately at the preserved phase after visibility returns", async () => {
+    let hidden = false;
+    const timers = [];
+    FakeContext.instances = [];
+    const controller = new MusicController({
+      AudioContext: FakeContext,
+      storage: storage(),
+      getHidden: () => hidden,
+      setTimer: (fn) => (timers.push(fn), timers.length),
+      clearTimer: vi.fn(),
+    });
+    await controller.activate();
+    const context = FakeContext.instances[0];
+    context.currentTime = 13.5;
+    timers[0]();
+    hidden = true;
+    await controller.handleVisibility();
+    const count = context.oscillators.length;
+    hidden = false;
+    await controller.handleVisibility();
+    expect(context.oscillators.length).toBeGreaterThan(count);
+  });
 });

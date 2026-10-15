@@ -819,3 +819,144 @@ h3 {
     transition: none !important;
   }
 }
+
+/* Keep the playable surface and thumb controls inside the practical viewport. */
+.arcade {
+  height: 100svh;
+  overflow: hidden;
+}
+.sidebar {
+  display: flex;
+  flex-direction: column;
+}
+.touch-panel {
+  order: -1;
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 844px) {
+  .arcade {
+    padding: 0 10px;
+  }
+  .masthead {
+    height: 40px;
+  }
+  .intro,
+  .how-to,
+  .tip,
+  .page-footer {
+    display: none;
+  }
+  .game-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .machine {
+    width: min(100%, calc(100svh - 154px));
+    max-width: 502px;
+  }
+  .scoreboard {
+    min-height: 48px;
+    padding: 7px 12px;
+    gap: 12px;
+  }
+  .score-group {
+    gap: 3px;
+  }
+  .score-group strong {
+    font-size: 23px;
+  }
+  .machine-footer {
+    min-height: 22px;
+    padding: 6px 12px;
+  }
+  .game-actions {
+    min-height: 42px;
+    padding: 5px 10px;
+  }
+  .game-actions button {
+    min-height: 32px;
+    padding: 5px 12px;
+  }
+  .sidebar {
+    width: auto;
+    padding: 0;
+  }
+  .touch-panel {
+    margin: 0;
+    display: block;
+  }
+  .touch-panel > .eyebrow {
+    display: none;
+  }
+  .dpad {
+    grid-template-columns: repeat(3, 56px);
+    grid-template-rows: repeat(2, 48px);
+    gap: 5px 8px;
+  }
+  .dpad [data-direction="up"] {
+    grid-row: 1;
+    grid-column: 2;
+  }
+  .dpad [data-direction="left"] {
+    grid-row: 2;
+    grid-column: 1;
+  }
+  .dpad [data-direction="down"] {
+    grid-row: 2;
+    grid-column: 2;
+  }
+  .dpad [data-direction="right"] {
+    grid-row: 2;
+    grid-column: 3;
+  }
+  .dpad-center {
+    display: none;
+  }
+}
+
+@media (max-width: 844px) and (orientation: landscape) and (max-height: 500px) {
+  .arcade {
+    padding: 0 8px;
+  }
+  .masthead {
+    height: 34px;
+  }
+  .game-layout {
+    height: calc(100svh - 34px);
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+  }
+  .machine {
+    width: min(calc(100svh - 40px), calc(100vw - 210px));
+  }
+  .machine-footer {
+    display: none;
+  }
+  .scoreboard {
+    min-height: 38px;
+    padding: 4px 9px;
+  }
+  .score-group strong {
+    font-size: 19px;
+  }
+  .stat-label {
+    font-size: 6px;
+  }
+  #level {
+    font-size: 18px;
+  }
+  .game-actions {
+    min-height: 34px;
+    padding: 3px 7px;
+  }
+  .game-actions button {
+    min-height: 28px;
+    font-size: 10px;
+  }
+}
