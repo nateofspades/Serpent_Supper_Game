@@ -1,6 +1,6 @@
 # Verification report
 
-Verified locally in headless Chromium with Playwright and Node.js 22.
+Engine tests verified locally with Node.js 22. Browser integration checks passed both locally and against the live GitHub Pages site in headless Chromium with Playwright.
 
 ## Passing engine tests
 
@@ -29,6 +29,6 @@ Verified locally in headless Chromium with Playwright and Node.js 22.
 
 ## Limits and deployment
 
-These results are local only. No GitHub Pages deployment or live-site verification has been performed because the requested repository name belongs to an existing private repository, and modifying existing repositories was explicitly prohibited. No repositories were changed.
+After owner authorization, the existing empty repository was made public and the game was pushed to `main`. GitHub Pages is configured for `main` and `/` (root), with HTTPS enforced. Deployment run https://github.com/nateofspades/Snakes_Game/actions/runs/38664102944 succeeded, the Pages API reported `built`, and https://nateofspades.github.io/Snakes_Game/ returned HTTP 200. The complete browser suite passed against that live URL. No other repositories were modified.
 
 Tests use touch emulation rather than a physical phone. Audio verification checks synthesis calls, not speaker output. Browser coverage is Chromium only. Storage is origin-specific and requires browser permission for persistence.

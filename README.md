@@ -63,11 +63,11 @@ BASE_URL=https://nateofspades.github.io/Snakes_Game/ npm run test:browser
 
 All production asset URLs are relative, so the game supports a GitHub Pages repository subpath. No build step is needed. Configure **Settings → Pages → Deploy from a branch → main → / (root)** after pushing the files. `.nojekyll` disables unnecessary Jekyll processing.
 
-Intended repository: https://github.com/nateofspades/Snakes_Game
+Public repository: https://github.com/nateofspades/Snakes_Game
 
-Intended website: https://nateofspades.github.io/Snakes_Game/
+Play live: https://nateofspades.github.io/Snakes_Game/
 
-These are intended targets, not a claim of deployment. At initial handoff, publishing was blocked because an existing private, empty repository already used this name and the request explicitly prohibited modifying existing repositories. Remote changes require owner authorization.
+GitHub Pages is enabled from `main` and `/` (root), with HTTPS enforced. The deployment completed successfully, the live URL returned HTTP 200, and the browser integration suite passed against the live site. The repository owner authorized using the existing empty repository and making it public.
 
 ## Browser notes
 
