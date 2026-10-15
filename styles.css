@@ -925,7 +925,7 @@ h3 {
   }
 }
 
-@media (max-width: 844px) and (orientation: landscape) and (max-height: 500px) {
+@media (min-width: 500px) and (max-width: 844px) and (max-height: 650px) {
   .arcade {
     padding: 0 8px;
   }
