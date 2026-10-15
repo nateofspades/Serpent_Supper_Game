@@ -1,6 +1,14 @@
-# Neon Snake
+# Snakes Game
+
+[Play Snakes Game online](https://nateofspades.github.io/Snakes_Game/)
 
 A browser-only arcade Snake game built with HTML, CSS, and vanilla JavaScript. No frameworks, runtime dependencies, accounts, tracking, API keys, database, or backend.
+
+## Gameplay screenshot
+
+![Snakes Game in action: a growing green snake, red food, and a score of 80](assets/gameplay.png)
+
+Captured during active gameplay on the live GitHub Pages website.
 
 ## Play
 
