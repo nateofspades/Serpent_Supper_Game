@@ -16,6 +16,7 @@ const viewports = [
   [932, 430],
   [480, 640],
   [1100, 568],
+  [1440, 500],
 ];
 const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
 const errors = [];
@@ -69,10 +70,13 @@ try {
       assert.ok(button.width >= 48 && button.height >= 48, `48px thumb target at ${width}x${height}: ${JSON.stringify(button)}`); assertions++;
       assert.ok(button.right <= width && button.bottom <= height, `direction button visible at ${width}x${height}`); assertions++;
     }
-    if (width <= 1200 && !(width >= 500 && height <= 780)) {
+    const adjacent =
+      (width >= 500 && width <= 1200 && height <= 780) ||
+      (width > 1200 && height <= 650);
+    if (width <= 1200 && !adjacent) {
       assert.ok(metrics.dpad.y >= metrics.machine.bottom, `D-pad follows machine at ${width}x${height}`); assertions++;
       assert.ok(metrics.dpad.y - metrics.machine.bottom <= 18, `D-pad is immediately below machine at ${width}x${height}`); assertions++;
-    } else if (width <= 1200) {
+    } else if (adjacent) {
       assert.ok(metrics.dpad.x >= metrics.machine.right, `landscape D-pad is adjacent to the machine at ${width}x${height}`); assertions++;
     }
     await page.screenshot({ path: `test-results/layout-${width}x${height}.png` });
