@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0d0d" />
+    <meta
+      name="description"
+      content="A fresh take on the arcade classic. Eat, grow, and chase your personal best in Neon Snake. Free, private, and entirely in your browser."
+    />
+    <title>NEON SNAKE — One more bite.</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <main class="arcade">
+      <header class="masthead">
+        <a class="brand" href="./" aria-label="Neon Snake home"
+          ><span class="brand-mark" aria-hidden="true">↳</span> NEON<span
+            >SNAKE</span
+          ></a
+        >
+        <span class="edition"
+          ><span class="live-dot"></span> THE ARCADE CLASSIC, REWIRED</span
+        >
+      </header>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">NO DOWNLOADS. JUST ONE MORE ROUND.</p>
+          <h1>One more <em>bite.</em></h1>
+          <p class="subtitle">
+            A little nostalgia. A lot of self-control. How long can you last?
+          </p>
+        </div>
+        <button
+          id="sound"
+          class="sound-button"
+          type="button"
+          aria-pressed="false"
+        >
+          ♪ Sound off
+        </button>
+      </section>
+      <section class="game-layout" aria-label="Snake arcade">
+        <div class="machine">
+          <div class="scoreboard">
+            <div class="score-group">
+              <span class="stat-label">YOUR SCORE</span
+              ><strong id="score">000</strong>
+            </div>
+            <div class="score-group best">
+              <span class="stat-label">♛ PERSONAL BEST</span
+              ><strong id="high-score">000</strong>
+            </div>
+            <div class="level-group">
+              <span class="stat-label">LEVEL</span><span id="level">01</span>
+            </div>
+          </div>
+          <div class="board" id="board">
+            <canvas
+              id="game"
+              width="720"
+              height="720"
+              role="img"
+              aria-label="Snake game board. Use arrow keys, WASD, or the directional buttons to steer."
+            ></canvas>
+            <div id="overlay" class="overlay">
+              <span class="overlay-icon" aria-hidden="true">↳</span>
+              <p class="eyebrow" id="overlay-kicker">READY WHEN YOU ARE</p>
+              <h2 id="overlay-title">Small snake.<br />Big ambitions.</h2>
+              <p id="overlay-message">
+                Eat the red dots. Don't become your own worst enemy.
+              </p>
+              <button id="primary" class="primary" type="button">
+                Start Game
+              </button>
+              <span class="overlay-hint" id="overlay-hint"
+                >ARROW KEYS / WASD TO MOVE</span
+              >
+            </div>
+          </div>
+          <div class="machine-footer">
+            <span id="status" role="status" aria-live="polite"
+              ><span class="live-dot"></span> Ready to play</span
+            ><span>24 × 24 GRID</span>
+          </div>
+          <div class="game-actions">
+            <button id="pause" type="button" disabled>Ⅱ Pause</button
+            ><button id="restart" type="button" aria-label="Restart">
+              ↻ Restart</button
+            ><span class="space-hint"><kbd>SPACE</kbd> to pause</span>
+          </div>
+        </div>
+        <aside class="sidebar">
+          <div class="how-to">
+            <p class="eyebrow">THE SHORT VERSION</p>
+            <h2>Stay hungry.<br />Stay alive.</h2>
+            <div class="instruction">
+              <span class="instruction-number">01</span>
+              <div>
+                <h3>Find your direction</h3>
+                <p>Steer with the arrow keys or WASD. No U-turns allowed.</p>
+                <div class="key-cluster" aria-hidden="true">
+                  <kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd>
+                </div>
+              </div>
+            </div>
+            <div class="instruction">
+              <span class="instruction-number">02</span>
+              <div>
+                <h3>Take a bite</h3>
+                <p>
+                  Red food. Green snake. Each bite adds 10 points and a little
+                  more of you.
+                </p>
+              </div>
+            </div>
+            <div class="instruction">
+              <span class="instruction-number">03</span>
+              <div>
+                <h3>Know your limits</h3>
+                <p>
+                  Avoid the walls and your own tail. The longer you get, the
+                  faster it gets.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="tip">
+            <span aria-hidden="true">✧</span>
+            <div>
+              <h3>Leave yourself a way out.</h3>
+              <p>
+                The best move isn't always the shortest route to your next meal.
+              </p>
+            </div>
+          </div>
+          <div class="touch-panel">
+            <p class="eyebrow">THUMBS AT THE READY</p>
+            <div class="dpad" aria-label="Directional controls">
+              <button data-direction="up" aria-label="Move up" type="button">
+                ↑</button
+              ><button
+                data-direction="left"
+                aria-label="Move left"
+                type="button"
+              >
+                ←</button
+              ><span class="dpad-center" aria-hidden="true">·</span
+              ><button
+                data-direction="right"
+                aria-label="Move right"
+                type="button"
+              >
+                →</button
+              ><button
+                data-direction="down"
+                aria-label="Move down"
+                type="button"
+              >
+                ↓
+              </button>
+            </div>
+          </div>
+        </aside>
+      </section>
+      <footer class="page-footer">
+        <span>BUILT FOR THE LOVE OF THE GAME.</span
+        ><span
+          >No accounts. No ads. Just snake.
+          <span class="mini-snake" aria-hidden="true">▪▪▪</span></span
+        >
+      </footer>
+      <noscript
+        >This game needs JavaScript enabled. No account, API key, or server is
+        required.</noscript
+      >
+    </main>
+  </body>
+</html>
