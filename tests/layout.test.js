@@ -12,6 +12,7 @@ const viewports = [
   [844, 390],
   [600, 600],
   [700, 600],
+  [800, 700],
 ];
 const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
 const errors = [];
@@ -65,7 +66,7 @@ try {
       assert.ok(button.width >= 48 && button.height >= 48, `48px thumb target at ${width}x${height}: ${JSON.stringify(button)}`); assertions++;
       assert.ok(button.right <= width && button.bottom <= height, `direction button visible at ${width}x${height}`); assertions++;
     }
-    if (width <= 844 && !(width >= 500 && height <= 650)) {
+    if (width <= 844 && !(width >= 500 && height <= 780)) {
       assert.ok(metrics.dpad.y >= metrics.machine.bottom, `D-pad follows machine at ${width}x${height}`); assertions++;
       assert.ok(metrics.dpad.y - metrics.machine.bottom <= 18, `D-pad is immediately below machine at ${width}x${height}`); assertions++;
     } else if (width <= 844) {
