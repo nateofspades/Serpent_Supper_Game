@@ -1,11 +1,12 @@
 import { Engine } from "./engine.js";
+import { MusicController } from "./music.js";
 
 export const game = new Engine();
 const $ = (id) => document.getElementById(id);
 const canvas = $("game");
 const ctx = canvas.getContext("2d");
 let lastTick = performance.now();
-// Storage and audio are optional: private browsing must not break gameplay.
+// Storage is optional: private browsing must not break gameplay.
 const storage = {
   get(key, fallback) {
     try {
@@ -24,53 +25,31 @@ const storage = {
 };
 const storedBest = Number(storage.get("neon-snake-best", 0));
 let best = Number.isFinite(storedBest) && storedBest >= 0 ? storedBest : 0;
-let soundEnabled = storage.get("neon-snake-sound", "false") === "true";
-let audio;
-function unlockAudio() {
-  if (!soundEnabled) return;
-  try {
-    const Audio = window.AudioContext || window.webkitAudioContext;
-    if (Audio && !audio) audio = new Audio();
-    if (audio?.state === "suspended") audio.resume().catch(() => {});
-  } catch {
-    /* Browser does not support audio. */
-  }
-}
-function tone(kind) {
-  if (!soundEnabled || !audio || audio.state !== "running") return;
-  const now = audio.currentTime;
-  const oscillator = audio.createOscillator();
-  const gain = audio.createGain();
-  oscillator.type = kind === "lose" ? "sawtooth" : "sine";
-  oscillator.frequency.setValueAtTime(kind === "lose" ? 180 : 520, now);
-  oscillator.frequency.exponentialRampToValueAtTime(
-    kind === "lose" ? 45 : 900,
-    now + 0.16,
-  );
-  gain.gain.setValueAtTime(0.06, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-  oscillator.connect(gain);
-  gain.connect(audio.destination);
-  oscillator.start(now);
-  oscillator.stop(now + 0.22);
-  oscillator.onended = () => {
-    oscillator.disconnect();
-    gain.disconnect();
-  };
-}
-function updateSound() {
-  $("sound").setAttribute("aria-pressed", String(soundEnabled));
-  $("sound").textContent = soundEnabled ? "♪ Sound on" : "♪ Sound off";
-}
-$("sound").addEventListener("click", () => {
-  soundEnabled = !soundEnabled;
-  storage.set("neon-snake-sound", soundEnabled);
-  unlockAudio();
-  updateSound();
+export const music = new MusicController({
+  AudioContext: window.AudioContext || window.webkitAudioContext,
+  storage: {
+    getItem: (key) => storage.get(key, null),
+    setItem: (key, value) => storage.set(key, value),
+  },
+  getHidden: () => document.hidden,
 });
-document.addEventListener("pointerdown", unlockAudio);
-document.addEventListener("keydown", unlockAudio);
-updateSound();
+function updateMusic() {
+  $("music").setAttribute("aria-pressed", String(music.enabled));
+  $("music").textContent = music.enabled ? "♫ Music on" : "♫ Music off";
+}
+$("music").addEventListener("click", async () => {
+  await music.toggle();
+  updateMusic();
+});
+document.addEventListener("pointerdown", (event) => {
+  if (!event.target.closest?.("#music")) music.activate();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Tab") music.activate();
+});
+document.addEventListener("visibilitychange", () => music.handleVisibility());
+window.addEventListener("pageshow", () => music.handleInterruption());
+updateMusic();
 
 function updateUI() {
   if (game.score > best) {
@@ -221,9 +200,7 @@ document.querySelectorAll("[data-direction]").forEach((button) => {
 });
 function frame(now) {
   if (game.status === "running" && now - lastTick >= game.interval) {
-    const event = game.tick();
-    if (event === "eat" || event === "win") tone("eat");
-    if (event === "lose") tone("lose");
+    game.tick();
     lastTick = now;
     updateUI();
     draw();

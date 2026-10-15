@@ -19,11 +19,22 @@
 * {
   box-sizing: border-box;
 }
+html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
 body {
   margin: 0;
   background:
     radial-gradient(ellipse at 15% 30%, #15211866, transparent 55%), var(--bg);
   color: var(--text);
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
 }
 button,
 a {
@@ -146,7 +157,7 @@ h1 em {
   color: var(--muted);
   font-size: 13px;
 }
-.sound-button {
+.music-button {
   padding: 10px 14px;
   background: transparent;
   font-size: 12px;
@@ -414,6 +425,9 @@ h3 {
 .dpad button {
   font-size: 20px;
   border-radius: 7px;
+  min-width: 48px;
+  min-height: 48px;
+  touch-action: none;
 }
 .dpad [data-direction="up"] {
   grid-column: 2;
@@ -522,7 +536,7 @@ h3 {
     line-height: 1.6;
     max-width: 230px;
   }
-  .sound-button {
+  .music-button {
     font-size: 10px;
     padding: 10px;
     align-self: flex-start;
@@ -638,7 +652,7 @@ h3 {
   .subtitle {
     max-width: none;
   }
-  .sound-button {
+  .music-button {
     position: absolute;
     top: 20px;
     right: 16px;
@@ -772,7 +786,7 @@ h3 {
   .masthead {
     height: 56px;
   }
-  .sound-button {
+  .music-button {
     top: 12px;
   }
   .intro {

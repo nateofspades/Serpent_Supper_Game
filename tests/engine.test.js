@@ -1,4 +1,4 @@
-import test from "node:test";
+import { test } from "vitest";
 import assert from "node:assert/strict";
 
 // Dynamic import lets a missing implementation report a clear feature failure.
