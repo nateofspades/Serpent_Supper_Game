@@ -64,6 +64,8 @@ export class MusicController {
   }
 
   async toggle() {
+    // The toggle itself is a trusted user gesture and can unlock Web Audio.
+    this.activated = true;
     return this.setEnabled(!this.enabled);
   }
 
@@ -89,9 +91,6 @@ export class MusicController {
       if (this.context.state === "running") await this.context.suspend().catch(() => {});
     } else if (this.enabled && this.activated) {
       await this.context.resume().catch(() => {});
-      this.timelineOrigin = this.context.currentTime;
-      this.#resetSchedule();
-      this.#schedule();
     }
   }
 

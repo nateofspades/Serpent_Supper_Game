@@ -8,7 +8,7 @@
 npm test
 ```
 
-Current suite: **14 tests** across three files.
+Current suite: **15 tests** across three files.
 
 - Engine start, movement, eating, growth, speed, legal tail entry, wall/self collision, full-board win, pause/resume, restart, valid buffered turns, and immediate reversal rejection.
 - Music deferred startup, single-context/single-scheduler behavior, mute/resume position, preference persistence, disabled startup, visibility suspension/resume, interruption, and closed-context replacement.

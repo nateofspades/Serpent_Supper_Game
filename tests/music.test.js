@@ -115,6 +115,14 @@ describe("MusicController", () => {
     expect(FakeContext.instances).toHaveLength(1);
   });
 
+  it("treats enabling with the Music toggle as the activating interaction", async () => {
+    const { controller } = harness({ [MUSIC_KEY]: "false" });
+    await controller.toggle();
+    expect(controller.enabled).toBe(true);
+    expect(FakeContext.instances).toHaveLength(1);
+    expect(controller.playing).toBe(true);
+  });
+
   it("suspends while hidden, resumes after visibility returns, and replaces a closed context once", async () => {
     let hidden = false;
     FakeContext.instances = [];
@@ -140,7 +148,7 @@ describe("MusicController", () => {
     expect(FakeContext.instances).toHaveLength(2);
   });
 
-  it("resumes scheduling immediately at the preserved phase after visibility returns", async () => {
+  it("preserves pending notes without duplicating them after visibility returns", async () => {
     let hidden = false;
     const timers = [];
     FakeContext.instances = [];
@@ -160,6 +168,8 @@ describe("MusicController", () => {
     const count = context.oscillators.length;
     hidden = false;
     await controller.handleVisibility();
-    expect(context.oscillators.length).toBeGreaterThan(count);
+    expect(context.oscillators.length).toBe(count);
+    timers[0]();
+    expect(context.oscillators.length).toBe(count);
   });
 });
