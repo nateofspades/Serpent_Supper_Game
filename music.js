@@ -96,12 +96,6 @@ export class MusicController {
 
   async handleInterruption() {
     if (!this.enabled || !this.activated || this.getHidden()) return;
-    if (this.context?.state === "closed") {
-      this.context = null;
-      this.master = null;
-      if (this.timer) this.clearTimer(this.timer);
-      this.timer = null;
-    }
     await this.#ensureContext();
   }
 

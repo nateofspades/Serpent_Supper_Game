@@ -141,9 +141,12 @@ describe("MusicController", () => {
     hidden = false;
     await controller.handleVisibility();
     expect(first.resume).toHaveBeenCalledTimes(2);
+    first.currentTime = 15.5;
+    const position = controller.position;
     first.state = "closed";
     await controller.handleInterruption();
     expect(FakeContext.instances).toHaveLength(2);
+    expect(controller.position).toBe(position);
     await controller.handleInterruption();
     expect(FakeContext.instances).toHaveLength(2);
   });
