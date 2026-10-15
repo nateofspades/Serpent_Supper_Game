@@ -1,6 +1,6 @@
 # Snakes Game
 
-[Play Snakes Game online](https://nateofspades.github.io/Snakes_Game/)
+**Play now: https://nateofspades.github.io/Snakes_Game/**
 
 A browser-only arcade Snake game built with HTML, CSS, and vanilla JavaScript. No frameworks, runtime dependencies, accounts, tracking, API keys, database, or backend.
 
