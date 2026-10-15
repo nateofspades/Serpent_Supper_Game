@@ -14,6 +14,7 @@ const viewports = [
   [700, 600],
   [800, 700],
   [932, 430],
+  [480, 640],
 ];
 const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
 const errors = [];

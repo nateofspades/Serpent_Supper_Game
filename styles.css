@@ -862,7 +862,7 @@ h3 {
     gap: 6px;
   }
   .machine {
-    width: min(100%, calc(100svh - 154px));
+    width: min(100%, calc(100svh - 260px));
     max-width: 502px;
   }
   .scoreboard {
