@@ -1,0 +1,44 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run unit tests
+        run: npm test
+      - name: Start static server
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/neon-snake-server.log 2>&1 &
+          echo $! > /tmp/neon-snake-server.pid
+          for attempt in {1..20}; do
+            curl --fail --silent http://127.0.0.1:8080/ > /dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/neon-snake-server.log
+          exit 1
+      - name: Run browser integration tests
+        run: npm run test:browser
+      - name: Run responsive layout tests
+        run: npm run test:layout
+      - name: Stop static server
+        if: always()
+        run: |
+          if [ -f /tmp/neon-snake-server.pid ]; then
+            kill "$(cat /tmp/neon-snake-server.pid)" 2>/dev/null || true
+          fi

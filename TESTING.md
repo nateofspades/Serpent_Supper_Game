@@ -1,35 +1,50 @@
-# Verification report
+# Neon Snake testing
 
-Engine tests verified locally with Node.js 22. Browser integration checks passed both locally and against the live GitHub Pages site in headless Chromium with Playwright.
+## Automated suites
 
-## Passing engine tests
+### Unit and static interface — Vitest
 
-- Ready → Start → rightward movement, three-cell initial length.
-- Eating increases length and score, reduces the tick interval, and respawns on a free cell.
-- Wall collisions and body collisions end play; the departing tail cell is legal.
-- Eating the final free cell completes the board without a spawning loop.
-- Buffered direction changes are processed one per tick; immediate reversals and overflow inputs are rejected.
-- Pause freezes state; Resume continues; Restart clears score, body, direction, and queued turns.
+```sh
+npm test
+```
 
-## Passing browser checks
+Current suite: **14 tests** across three files.
 
-- Start, automatic movement, all four arrow keys and all four WASD mappings.
-- Space pause/resume and button pause/resume.
-- Restart and Game Over → Play Again.
-- Food pickup, visible score increase, growth, high-score persistence after reload.
-- Rapid queued turns remain sequential rather than producing an invalid same-tick reversal.
-- Wall and self-collisions display Game Over and the final score.
-- Sound preference persistence; actual Web Audio oscillators generated for eating and losing; muted events generate none.
-- Touch-emulated directional buttons in all four directions.
-- No horizontal overflow and a square board at 320, 375, 390, 768, and 1440 px widths.
-- Board and directional controls fit together at a 390 × 844 phone viewport.
-- Desktop and mobile screenshots inspected; no blocking clipping or overlap.
-- No captured browser JavaScript or console errors.
-- Gameplay remains functional with blocked localStorage and unavailable Web Audio.
-- Viewport-fit regression suite checks the complete game panel, square board (maximum 480 CSS pixels), and visible Start/Resume buttons at 1366×768, 1440×900, 1280×720, 1024×600, 651×768, 700×900, 650×900, 768×1024, 1920×1080, 390×844, 375×667, and 320×568 at normal browser zoom. Run with `npm run test:layout`.
+- Engine start, movement, eating, growth, speed, legal tail entry, wall/self collision, full-board win, pause/resume, restart, valid buffered turns, and immediate reversal rejection.
+- Music deferred startup, single-context/single-scheduler behavior, mute/resume position, preference persistence, disabled startup, visibility suspension/resume, interruption, and closed-context replacement.
+- One Music control, no Sound/event-SFX interface, four labelled direction controls, scroll locking, touch suppression, and minimum thumb-target declarations.
 
-## Limits and deployment
+### Browser integration — Playwright Chromium
 
-After owner authorization, the existing empty repository was made public and the game was pushed to `main`. GitHub Pages is configured for `main` and `/` (root), with HTTPS enforced. Deployment run https://github.com/nateofspades/Snakes_Game/actions/runs/38664102944 succeeded, the Pages API reported `built`, and https://nateofspades.github.io/Snakes_Game/ returned HTTP 200. The complete browser suite passed against that live URL. No other repositories were modified.
+Start the site first, then run:
 
-Tests use touch emulation rather than a physical phone. Audio verification checks synthesis calls, not speaker output. Browser coverage is Chromium only. Storage is origin-specific and requires browser permission for persistence.
+```sh
+python3 -m http.server 8080
+npm run test:browser
+```
+
+Current suite: **53 assertions** across 1920×1080, 1366×768, 768×1024, 390×844, 320×568, and 844×390.
+
+It verifies gameplay startup, music's post-interaction start and one-context lifecycle, all touch controls being actionable, reversal rejection, restart/pause/resume without music duplication, persisted Music on/off, mute position continuity, orientation continuity, the unchanged `neon-snake-best` key with value 137, blocked-storage/unavailable-audio fallback, no overflow, visible controls, no failed/HTTP-error asset requests, and no browser console/page errors.
+
+### Responsive layout — Playwright Chromium
+
+```sh
+npm run test:layout
+```
+
+Current suite: **92 assertions** at the same six required viewports. It verifies a square practical-size board, no horizontal or vertical page overflow, hidden page scrolling, disabled touch panning, four 48 px or larger direction targets, every target inside the viewport, the portrait D-pad immediately after the machine, and the short-landscape D-pad adjacent to it.
+
+`npm run test:all` runs all three suites serially after a server is already running. Screenshots are written to ignored `test-results/`; the current README screenshot is `assets/gameplay.png` and was freshly captured from active local gameplay at 1366×768.
+
+## CI
+
+`.github/workflows/test.yml` runs on every pull request and every push to `main`. It installs locked npm dependencies and Chromium with Linux dependencies, starts the static server, waits for readiness, and runs the unit, browser, and layout suites with one browser worker/process at a time.
+
+## Scope and limits
+
+- Browser automation uses Chromium only.
+- Touch checks use Playwright emulation; no physical-device testing is claimed.
+- Web Audio tests inspect graph/context lifecycle and synthesis scheduling, not speaker output or subjective musical quality.
+- The local and deployed origins maintain separate browser storage.
+- GitHub Pages deployment and external CI can only be re-verified after these local commits are pushed; this work intentionally does not push.

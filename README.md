@@ -1,85 +1,84 @@
-# Snakes Game
+# Neon Snake
 
-**Play now: https://nateofspades.github.io/Snakes_Game/**
+**[Play Neon Snake](https://nateofspades.github.io/neon_snake/)** · **[Source code](https://github.com/nateofspades/neon_snake)**
 
-A browser-only arcade Snake game built with HTML, CSS, and vanilla JavaScript. No frameworks, runtime dependencies, accounts, tracking, API keys, database, or backend.
+A responsive, browser-only arcade Snake game built with HTML, CSS, Canvas, and vanilla JavaScript. It has no accounts, tracking, ads, backend, or runtime dependencies.
 
-## Gameplay screenshot
+![Neon Snake active gameplay with the synthwave music control and directional pad](assets/gameplay.png)
 
-![Snakes Game in action: a growing green snake, red food, and a score of 80](assets/gameplay.png)
+## Controls
 
-Captured during active gameplay.
+### Desktop
 
-The board adapts to the available screen height and is capped at 480 CSS pixels on larger screens, keeping the game controls visible at normal browser zoom.
+- Select **Start Game**, then steer with the **arrow keys** or **WASD**.
+- Press **Space** or select **Pause / Resume** to pause and continue.
+- **Restart** begins a new run immediately; **Play Again** starts over after a loss.
+- Direct reversals are rejected. Up to two legal turns can be buffered and are applied one per game tick.
 
-## Play
+### Mobile and touch
 
-- Select **Start Game** to begin.
-- Steer with **arrow keys**, **WASD**, or the on-screen directional pad.
-- Eat red food to gain **10 points**, grow by one cell, and increase speed.
-- Avoid walls and your own body. Moving into the tail's departing cell is legal.
-- Use **Space** or **Pause / Resume** to pause and continue.
-- **Restart** immediately begins a fresh run. **Play Again** starts over after a loss.
-- Toggle **Sound** to enable or disable synthesized eating and losing effects.
-- Personal best and sound preference are saved in localStorage on the current browser and origin.
+- Select **Start Game**, then use the four large directional buttons below the board in portrait or beside it in short landscape view.
+- The page and game surface suppress browser scrolling and touch panning while playing.
+- The layout keeps the board, controls, Music toggle, and gameplay actions visible at practical phone, tablet, laptop, and desktop viewports.
 
-The 24 × 24 board advances every 155 ms initially, decreasing by 4 ms per meal to a 65 ms minimum. The level indicator increases every five meals. Filling the whole board wins the game. Up to two turns can be buffered, with one consumed per tick; direct reversals are rejected against the last buffered direction.
+Each red food pickup adds 10 points and one body segment. The 24 × 24 board starts at a 155 ms tick and accelerates to a 65 ms minimum. The personal best is stored under the original `neon-snake-best` localStorage key so existing scores remain compatible.
+
+## Music
+
+**Neon Circuit** is the original instrumental synthwave/electronic background score composed programmatically for this project. It is synthesized at runtime with the Web Audio API; it contains no samples, recordings, generated audio files, or third-party musical assets. Copyright © 2026 Nathan Burns and licensed under this repository's MIT License.
+
+Music starts only after a user interaction. **Music on / off** is persisted under `neon-snake-music`; muting preserves the loop position. The single music controller continues independently of game start, pause, restart, menu, game over, resize, and orientation changes, and handles page visibility, interrupted audio, unavailable Web Audio, and closed contexts without creating simultaneous duplicate tracks. Food, loss, and button sound effects are intentionally absent.
 
 ## Run locally
 
-From this directory, with Python 3 installed:
+The game itself needs only a static HTTP server because it uses native ES modules:
 
 ```sh
 python3 -m http.server 8080
 ```
 
-Open http://localhost:8080/. No npm install or build is needed to play. Use HTTP rather than opening index.html directly because the JavaScript uses native ES modules. This is only a static file server, not an application backend.
+Open <http://localhost:8080/>. No build step is required.
 
-## Files
+## Install and test
 
-- `index.html`: accessible controls, game board, and help.
-- `styles.css`: responsive arcade design, keyboard focus, and reduced-motion handling.
-- `engine.js`: deterministic, DOM-independent rules and state transitions.
-- `app.js`: canvas rendering, input, timing, optional storage, and Web Audio.
-- `favicon.svg`: local icon; no external fonts or image requests.
-- `tests/engine.test.js`: rule and state regression tests.
-- `tests/browser.test.js`: desktop/touch Chromium integration tests and screenshots.
-
-The exported `game` instance in `app.js` supports deterministic browser integration tests without a global test hook. Rendering runs via requestAnimationFrame; the grid advances at its current fixed step. Delayed frames do not trigger a burst of catch-up moves.
-
-## Tests (development only)
-
-Node.js 22+ and npm are needed for automated tests, not for the game itself:
+Automated tests require Node.js 22+ and npm:
 
 ```sh
 npm ci
-npm test
 npx playwright install chromium
-# Start the static server in a separate terminal, then:
-npm run test:browser
-npm run test:layout
+npm test
 ```
 
-On a minimal Linux machine Playwright may require OS libraries: `npx playwright install --with-deps chromium`.
-
-Screenshots are generated in `test-results/` (git-ignored). The browser suite uses a paused virtual clock and deliberate state setups to test rare collisions and food pickups reliably. It exercises real DOM events, native canvas rendering, localStorage, and Web Audio. Mobile testing is touch emulation, not physical-device certification. Sound generation is instrumented, not a subjective listening test.
-
-To run the same browser suite against a deployment:
+For browser and responsive suites, keep the local server running in another terminal:
 
 ```sh
-BASE_URL=https://nateofspades.github.io/Snakes_Game/ npm run test:browser
+npm run test:browser
+npm run test:layout
+# or, after starting the server:
+npm run test:all
 ```
 
-## GitHub Pages
+On minimal Linux installations, use `npx playwright install --with-deps chromium`. Browser coverage is Chromium and mobile coverage uses browser touch emulation, not physical-device certification. See [TESTING.md](TESTING.md) for the test matrix and current verification details.
 
-All production asset URLs are relative, so the game supports a GitHub Pages repository subpath. No build step is needed. Configure **Settings → Pages → Deploy from a branch → main → / (root)** after pushing the files. `.nojekyll` disables unnecessary Jekyll processing.
+To exercise a deployment instead of localhost:
 
-Public repository: https://github.com/nateofspades/Snakes_Game
+```sh
+BASE_URL=https://nateofspades.github.io/neon_snake/ npm run test:browser
+BASE_URL=https://nateofspades.github.io/neon_snake/ npm run test:layout
+```
 
-Play live: https://nateofspades.github.io/Snakes_Game/
+## Project files
 
-GitHub Pages is enabled from `main` and `/` (root), with HTTPS enforced. The deployment completed successfully, the live URL returned HTTP 200, and the browser integration suite passed against the live site. The repository owner authorized using the existing empty repository and making it public.
+- `index.html` — accessible game, music, action, and direction controls.
+- `styles.css` — viewport-fit responsive design and touch-scroll suppression.
+- `engine.js` — deterministic, DOM-independent game rules.
+- `app.js` — rendering, input, timing, storage, and UI integration.
+- `music.js` — original procedural score and resilient Web Audio lifecycle.
+- `tests/*.test.js` — Vitest unit/interface tests and Playwright browser/layout suites.
+- `.github/workflows/test.yml` — CI for pushes to `main` and pull requests.
+
+All production references use relative URLs (`./app.js`, `./music.js`, `./styles.css`, `./favicon.svg`, and `assets/gameplay.png`), so the site works from the GitHub Pages repository subpath `/neon_snake/`. `.nojekyll` keeps Pages serving the static files directly.
 
 ## Browser notes
 
-A modern browser with Canvas 2D, ES modules, and CSS grid is required. Sound starts disabled and requires a user gesture; unsupported audio fails silently. If storage is blocked, the game remains playable with session-only scores. Best scores do not sync between devices or between localhost and GitHub Pages. On very short mobile viewports some scrolling is needed.
+Canvas 2D, ES modules, CSS Grid, and Web Audio are used where available. If localStorage is blocked, scores and music preferences become session-only. If Web Audio is missing or cannot resume, gameplay remains functional. Scores and preferences are origin-specific and do not sync between devices.
