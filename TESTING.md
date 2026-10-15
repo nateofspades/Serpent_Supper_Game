@@ -8,7 +8,7 @@
 npm test
 ```
 
-Current suite: **15 tests** across three files.
+Current suite: **16 tests** across three files.
 
 - Engine start, movement, eating, growth, speed, legal tail entry, wall/self collision, full-board win, pause/resume, restart, valid buffered turns, and immediate reversal rejection.
 - Music deferred startup, single-context/single-scheduler behavior, mute/resume position, preference persistence, disabled startup, visibility suspension/resume, interruption, and closed-context replacement.
@@ -33,7 +33,7 @@ It verifies gameplay startup, music's post-interaction start and one-context lif
 npm run test:layout
 ```
 
-Current suite: **92 assertions** at the same six required viewports. It verifies a square practical-size board, no horizontal or vertical page overflow, hidden page scrolling, disabled touch panning, four 48 px or larger direction targets, every target inside the viewport, the portrait D-pad immediately after the machine, and the short-landscape D-pad adjacent to it.
+Current suite: **98 assertions** at the same six required viewports. It verifies a square practical-size board, no horizontal or vertical page overflow, hidden page scrolling, disabled touch panning, the Music control contained in the header, four 48 px or larger direction targets, every target inside the viewport, the portrait D-pad immediately after the machine, and the short-landscape D-pad adjacent to it.
 
 `npm run test:all` runs all three suites serially after a server is already running. Screenshots are written to ignored `test-results/`; the current README screenshot is `assets/gameplay.png` and was freshly captured from active local gameplay at 1366×768.
 

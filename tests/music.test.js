@@ -172,4 +172,14 @@ describe("MusicController", () => {
     timers[0]();
     expect(context.oscillators.length).toBe(count);
   });
+
+  it("skips expired steps instead of replaying an overdue burst", async () => {
+    const { controller, timers } = harness();
+    await controller.activate();
+    const context = FakeContext.instances[0];
+    const count = context.oscillators.length;
+    context.currentTime = 100;
+    timers[0]();
+    expect(context.oscillators.length - count).toBeLessThan(10);
+  });
 });

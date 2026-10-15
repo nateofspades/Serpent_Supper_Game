@@ -162,6 +162,13 @@ export class MusicController {
 
   #schedule() {
     if (!this.context || this.context.state === "closed") return;
+    const nextTime = this.scheduleOrigin + this.nextStep * STEP;
+    if (nextTime < this.context.currentTime) {
+      const skipped = Math.ceil((this.context.currentTime - nextTime) / STEP);
+      const absoluteStep = this.nextStep + skipped;
+      this.scheduleOrigin += Math.floor(absoluteStep / 32) * LOOP_SECONDS;
+      this.nextStep = absoluteStep % 32;
+    }
     const horizon = this.context.currentTime + 0.6;
     while (this.scheduleOrigin + this.nextStep * STEP < horizon) {
       const index = this.nextStep % 32;

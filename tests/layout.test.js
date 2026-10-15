@@ -37,6 +37,8 @@ try {
       return {
         board: rect("#board"),
         machine: rect(".machine"),
+        masthead: rect(".masthead"),
+        music: rect("#music"),
         dpad: rect(".dpad"),
         buttons: [...document.querySelectorAll(".dpad button")].map((button) => {
           const value = button.getBoundingClientRect();
@@ -54,6 +56,7 @@ try {
     assert.ok(metrics.scrollHeight <= height, `no vertical overflow at ${width}x${height}: ${metrics.scrollHeight}`); assertions++;
     assert.equal(metrics.bodyOverflow, "hidden"); assertions++;
     assert.equal(metrics.touchAction, "none"); assertions++;
+    assert.ok(metrics.music.bottom <= metrics.masthead.bottom, `Music control stays inside header at ${width}x${height}`); assertions++;
     for (const button of metrics.buttons) {
       assert.ok(button.width >= 48 && button.height >= 48, `48px thumb target at ${width}x${height}: ${JSON.stringify(button)}`); assertions++;
       assert.ok(button.right <= width && button.bottom <= height, `direction button visible at ${width}x${height}`); assertions++;
