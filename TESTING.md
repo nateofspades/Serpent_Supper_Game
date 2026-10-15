@@ -26,6 +26,7 @@ Engine tests verified locally with Node.js 22. Browser integration checks passed
 - Desktop and mobile screenshots inspected; no blocking clipping or overlap.
 - No captured browser JavaScript or console errors.
 - Gameplay remains functional with blocked localStorage and unavailable Web Audio.
+- Viewport-fit regression suite checks the complete game panel, square board (maximum 480 CSS pixels), and visible Start/Resume buttons at 1366×768, 1440×900, 1280×720, 1024×600, 651×768, 700×900, 650×900, 768×1024, 1920×1080, 390×844, 375×667, and 320×568 at normal browser zoom. Run with `npm run test:layout`.
 
 ## Limits and deployment
 

@@ -8,7 +8,9 @@ A browser-only arcade Snake game built with HTML, CSS, and vanilla JavaScript. N
 
 ![Snakes Game in action: a growing green snake, red food, and a score of 80](assets/gameplay.png)
 
-Captured during active gameplay on the live GitHub Pages website.
+Captured during active gameplay.
+
+The board adapts to the available screen height and is capped at 480 CSS pixels on larger screens, keeping the game controls visible at normal browser zoom.
 
 ## Play
 
@@ -55,6 +57,7 @@ npm test
 npx playwright install chromium
 # Start the static server in a separate terminal, then:
 npm run test:browser
+npm run test:layout
 ```
 
 On a minimal Linux machine Playwright may require OS libraries: `npx playwright install --with-deps chromium`.
