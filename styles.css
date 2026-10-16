@@ -862,7 +862,7 @@ h3 {
     gap: 6px;
   }
   .machine {
-    width: min(100%, calc(100svh - 294px));
+    width: min(100%, calc(100svh - 359px));
     max-width: 502px;
   }
   .scoreboard {
@@ -901,7 +901,7 @@ h3 {
   }
   .dpad {
     grid-template-columns: repeat(3, 64px);
-    grid-template-rows: repeat(2, 60px);
+    grid-template-rows: repeat(3, 60px);
     gap: 5px 8px;
   }
   .dpad [data-direction="up"] {
@@ -913,7 +913,7 @@ h3 {
     grid-column: 1;
   }
   .dpad [data-direction="down"] {
-    grid-row: 2;
+    grid-row: 3;
     grid-column: 2;
   }
   .dpad [data-direction="right"] {
@@ -941,11 +941,14 @@ h3 {
 
 @media (max-width: 499px) {
   .machine {
-    width: min(100%, calc(100svh - 294px));
+    width: min(100%, calc(100svh - 359px));
   }
 }
 
 @media (max-width: 499px) and (max-height: 600px) {
+  .machine-footer {
+    display: none;
+  }
   .machine {
     width: min(100%, calc(100svh - 336px));
   }

@@ -78,6 +78,10 @@ try {
       assert.ok(button.width >= 60 && button.height >= 60, `60px D-pad thumb target at ${width}x${height}: ${JSON.stringify(button)}`); assertions++;
       assert.ok(button.right <= width && button.bottom <= height, `direction button visible at ${width}x${height}`); assertions++;
     }
+    const [up, left, right, down] = metrics.buttons;
+    assert.ok(down.y > Math.max(left.bottom, right.bottom), `Down starts below Left/Right at ${width}x${height}`); assertions++;
+    assert.ok(down.y - left.bottom <= 8, `Down is just below Left/Right at ${width}x${height}`); assertions++;
+    assert.ok(Math.abs(down.x - up.x) < 1, `Down stays horizontally centered at ${width}x${height}`); assertions++;
     for (let i = 0; i < metrics.buttons.length; i++) {
       for (let j = i + 1; j < metrics.buttons.length; j++) {
         const a = metrics.buttons[i];
