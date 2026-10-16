@@ -19,6 +19,11 @@ const viewports = [
   [640, 781],
   [1100, 568],
   [1440, 500],
+  [1536, 864], // 1920x1080 at 125% browser zoom
+  [1280, 720], // 1920x1080 at 150%
+  [960, 540], // 1920x1080 at 200%
+  [1200, 675],
+  [1201, 651],
 ];
 const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
 const errors = [];
@@ -93,6 +98,22 @@ try {
     if (width <= 844) {
       for (const button of metrics.interactive) {
         assert.ok(button.width >= 48 && button.height >= 48, `48px mobile button at ${width}x${height}: ${JSON.stringify(button)}`); assertions++;
+      }
+    }
+    if (width >= 900) {
+      const instructions = await page.evaluate(() => {
+        const sidebar = document.querySelector('.sidebar');
+        const blocks = [...document.querySelectorAll('.how-to, .instruction, .tip')];
+        return {
+          sidebar: sidebar.getBoundingClientRect().toJSON(),
+          scrollable: ['auto', 'scroll'].includes(getComputedStyle(sidebar).overflowY),
+          blocks: blocks.map(el => ({ ...el.getBoundingClientRect().toJSON(), visible: getComputedStyle(el).display !== 'none' })),
+        };
+      });
+      for (const block of instructions.blocks) {
+        assert.ok(block.visible && block.width > 0 && block.height > 0, `desktop instructions are shown at ${width}x${height}`); assertions++;
+        assert.ok(block.x >= 0 && block.right <= width, `instruction text fits horizontally at ${width}x${height}`); assertions++;
+        assert.ok(block.bottom <= height || (instructions.scrollable && instructions.sidebar.bottom <= height), `instructions visible or reachable by sidebar scroll at ${width}x${height}`); assertions++;
       }
     }
     const adjacent =
