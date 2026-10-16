@@ -1,6 +1,6 @@
 # Neon Snake
 
-**[Play Neon Snake](https://nateofspades.github.io/neon_snake/)** · **[Source code](https://github.com/nateofspades/neon_snake)**
+**Play now:** https://nateofspades.github.io/neon_snake/
 
 A responsive, browser-only arcade Snake game built with HTML, CSS, Canvas, and vanilla JavaScript. It has no accounts, tracking, ads, backend, or runtime dependencies.
 
