@@ -3,7 +3,7 @@
 export const MUSIC_KEY = "neon-snake-music";
 const LOOP_SECONDS = 8;
 const STEP = 0.25;
-const MASTER_VOLUME = 0.5;
+const MASTER_VOLUME = 1;
 const BASS = [55, 55, 65.41, 55, 73.42, 65.41, 49, 49];
 const LEAD = [440, 523.25, 659.25, 783.99, 659.25, 523.25, 493.88, 392];
 

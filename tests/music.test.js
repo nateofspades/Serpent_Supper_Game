@@ -114,7 +114,7 @@ describe("MusicController", () => {
     const first = FakeContext.instances[0];
     expect(first.gains[0].gain.events[0]).toEqual([
       "set",
-      0.5,
+      1,
       first.currentTime,
     ]);
 
@@ -122,7 +122,7 @@ describe("MusicController", () => {
     await controller.setEnabled(true);
     expect(first.gains[0].gain.events.at(-1)).toEqual([
       "target",
-      0.5,
+      1,
       first.currentTime,
       0.025,
     ]);
@@ -132,7 +132,7 @@ describe("MusicController", () => {
     const replacement = FakeContext.instances[1];
     expect(replacement.gains[0].gain.events[0]).toEqual([
       "set",
-      0.5,
+      1,
       replacement.currentTime,
     ]);
   });
