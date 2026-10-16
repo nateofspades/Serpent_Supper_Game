@@ -6,7 +6,7 @@
   "scripts": {
     "test": "vitest run --maxWorkers=1 tests/engine.test.js tests/music.test.js tests/interface.test.js",
     "test:unit": "vitest run --maxWorkers=1 tests/engine.test.js tests/music.test.js tests/interface.test.js",
-    "test:browser": "node tests/browser.test.js",
+    "test:browser": "node tests/browser.test.js && node tests/mobile-music.test.js",
     "test:layout": "node tests/layout.test.js",
     "test:all": "npm run test:unit && npm run test:browser && npm run test:layout",
     "serve": "python3 -m http.server 8080"

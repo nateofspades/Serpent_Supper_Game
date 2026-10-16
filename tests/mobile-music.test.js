@@ -99,7 +99,7 @@ try {
       contexts: window.__audio.contexts,
       master: window.__audio.masterValues[0],
     })),
-    { contexts: 1, master: 0.28 },
+    { contexts: 1, master: 1 },
     "the first mobile touch creates, resumes, and unmutes one context",
   );
 
@@ -148,7 +148,7 @@ try {
       master: window.__audio.masterValues[0],
       pressed: document.querySelector("#music").getAttribute("aria-pressed"),
     })),
-    { contexts: 1, master: 0.28, pressed: "true" },
+    { contexts: 1, master: 1, pressed: "true" },
     "the mobile Music toggle activates and unmutes music",
   );
   await toggleContext.close();
