@@ -22,7 +22,9 @@ class Param {
   }
 }
 class Node {
-  connect() { return this; }
+  connect() {
+    return this;
+  }
   disconnect() {}
 }
 class FakeContext {
@@ -53,16 +55,30 @@ class FakeContext {
     return node;
   }
   createBiquadFilter() {
-    return Object.assign(new Node(), { frequency: new Param(), Q: new Param(), type: "lowpass" });
+    return Object.assign(new Node(), {
+      frequency: new Param(),
+      Q: new Param(),
+      type: "lowpass",
+    });
   }
-  resume = vi.fn(async () => { this.state = "running"; });
-  suspend = vi.fn(async () => { this.state = "suspended"; });
-  addEventListener(type, callback) { this.listeners.set(type, callback); }
+  resume = vi.fn(async () => {
+    this.state = "running";
+  });
+  suspend = vi.fn(async () => {
+    this.state = "suspended";
+  });
+  addEventListener(type, callback) {
+    this.listeners.set(type, callback);
+  }
 }
 const storage = (initial = {}) => ({
   values: { ...initial },
-  getItem(key) { return this.values[key] ?? null; },
-  setItem(key, value) { this.values[key] = String(value); },
+  getItem(key) {
+    return this.values[key] ?? null;
+  },
+  setItem(key, value) {
+    this.values[key] = String(value);
+  },
 });
 const harness = (initial = {}) => {
   FakeContext.instances = [];
@@ -90,6 +106,35 @@ describe("MusicController", () => {
     expect(timers).toHaveLength(1);
     timers[0]();
     expect(FakeContext.instances[0].oscillators.length).toBeGreaterThan(3);
+  });
+
+  it("uses the target master volume on creation, unmute, and context recovery", async () => {
+    const { controller } = harness();
+    await controller.activate();
+    const first = FakeContext.instances[0];
+    expect(first.gains[0].gain.events[0]).toEqual([
+      "set",
+      0.28,
+      first.currentTime,
+    ]);
+
+    await controller.setEnabled(false);
+    await controller.setEnabled(true);
+    expect(first.gains[0].gain.events.at(-1)).toEqual([
+      "target",
+      0.28,
+      first.currentTime,
+      0.025,
+    ]);
+
+    first.state = "closed";
+    await controller.handleInterruption();
+    const replacement = FakeContext.instances[1];
+    expect(replacement.gains[0].gain.events[0]).toEqual([
+      "set",
+      0.28,
+      replacement.currentTime,
+    ]);
   });
 
   it("mutes and unmutes at the current position and persists the preference", async () => {

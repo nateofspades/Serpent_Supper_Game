@@ -3,6 +3,7 @@
 export const MUSIC_KEY = "neon-snake-music";
 const LOOP_SECONDS = 8;
 const STEP = 0.25;
+const MASTER_VOLUME = 0.28;
 const BASS = [55, 55, 65.41, 55, 73.42, 65.41, 49, 49];
 const LEAD = [440, 523.25, 659.25, 783.99, 659.25, 523.25, 493.88, 392];
 
@@ -47,14 +48,18 @@ export class MusicController {
   }
 
   get playing() {
-    return Boolean(this.context && this.context.state === "running" && this.enabled);
+    return Boolean(
+      this.context && this.context.state === "running" && this.enabled,
+    );
   }
 
   get position() {
     if (!this.context) return this.offset;
     return (
-      this.offset + Math.max(0, this.context.currentTime - this.timelineOrigin)
-    ) % LOOP_SECONDS;
+      (this.offset +
+        Math.max(0, this.context.currentTime - this.timelineOrigin)) %
+      LOOP_SECONDS
+    );
   }
 
   async activate() {
@@ -74,21 +79,28 @@ export class MusicController {
     this.#persist();
     if (this.master && this.context?.state !== "closed") {
       const now = this.context.currentTime;
-      this.master.gain.setTargetAtTime(this.enabled ? 0.14 : 0, now, 0.025);
+      this.master.gain.setTargetAtTime(
+        this.enabled ? MASTER_VOLUME : 0,
+        now,
+        0.025,
+      );
     }
-    if (this.enabled && this.activated && !this.getHidden()) await this.#ensureContext();
+    if (this.enabled && this.activated && !this.getHidden())
+      await this.#ensureContext();
     return this.enabled;
   }
 
   async handleVisibility() {
     if (!this.context || this.context.state === "closed") {
-      if (!this.getHidden() && this.enabled && this.activated) await this.#ensureContext();
+      if (!this.getHidden() && this.enabled && this.activated)
+        await this.#ensureContext();
       return;
     }
     if (this.getHidden()) {
       this.offset = this.position;
       this.timelineOrigin = this.context.currentTime;
-      if (this.context.state === "running") await this.context.suspend().catch(() => {});
+      if (this.context.state === "running")
+        await this.context.suspend().catch(() => {});
     } else if (this.enabled && this.activated) {
       await this.context.resume().catch(() => {});
     }
@@ -112,12 +124,16 @@ export class MusicController {
       try {
         this.context = new this.AudioContext();
         this.master = this.context.createGain();
-        this.master.gain.setValueAtTime(this.enabled ? 0.14 : 0, this.context.currentTime);
+        this.master.gain.setValueAtTime(
+          this.enabled ? MASTER_VOLUME : 0,
+          this.context.currentTime,
+        );
         this.master.connect(this.context.destination);
         this.timelineOrigin = this.context.currentTime;
         this.#resetSchedule();
         this.context.addEventListener?.("statechange", () => {
-          if (this.context?.state === "interrupted") this.context.resume().catch(() => {});
+          if (this.context?.state === "interrupted")
+            this.context.resume().catch(() => {});
         });
         this.timer = this.setTimer(() => this.#schedule());
       } catch {
@@ -126,7 +142,10 @@ export class MusicController {
         return;
       }
     }
-    if (this.context.state === "suspended" || this.context.state === "interrupted") {
+    if (
+      this.context.state === "suspended" ||
+      this.context.state === "interrupted"
+    ) {
       await this.context.resume().catch(() => {});
     }
     this.#schedule();

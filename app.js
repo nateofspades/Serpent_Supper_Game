@@ -41,9 +41,12 @@ $("music").addEventListener("click", async () => {
   await music.toggle();
   updateMusic();
 });
-document.addEventListener("pointerdown", (event) => {
+function activateMusic(event) {
   if (!event.target.closest?.("#music")) music.activate();
-});
+}
+document.addEventListener("pointerdown", activateMusic);
+document.addEventListener("touchstart", activateMusic, { passive: true });
+document.addEventListener("click", activateMusic);
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Tab") music.activate();
 });
