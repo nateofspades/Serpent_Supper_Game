@@ -157,11 +157,13 @@ function resetTime() {
 }
 function pause() {
   game.togglePause();
+  music.setPaused(game.status === "paused");
   resetTime();
   updateUI();
 }
 function restart() {
   game.restart();
+  music.setPaused(false);
   resetTime();
   updateUI();
   draw();

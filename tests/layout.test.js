@@ -15,6 +15,8 @@ const viewports = [
   [800, 700],
   [932, 430],
   [480, 640],
+  [480, 720],
+  [640, 781],
   [1100, 568],
   [1440, 500],
 ];
@@ -49,8 +51,14 @@ try {
         dpad: rect(".dpad"),
         buttons: [...document.querySelectorAll(".dpad button")].map((button) => {
           const value = button.getBoundingClientRect();
-          return { width: value.width, height: value.height, bottom: value.bottom, right: value.right };
+          return { x: value.x, y: value.y, width: value.width, height: value.height, bottom: value.bottom, right: value.right };
         }),
+        interactive: [...document.querySelectorAll("button")]
+          .filter((button) => getComputedStyle(button).display !== "none")
+          .map((button) => {
+            const value = button.getBoundingClientRect();
+            return { id: button.id, width: value.width, height: value.height };
+          }),
         scrollWidth: document.documentElement.scrollWidth,
         scrollHeight: document.documentElement.scrollHeight,
         bodyOverflow: getComputedStyle(document.body).overflow,
@@ -67,8 +75,21 @@ try {
     assert.ok(metrics.machine.y >= metrics.masthead.bottom, `machine stays below header at ${width}x${height}`); assertions++;
     assert.ok(metrics.machine.bottom <= height, `complete machine stays visible at ${width}x${height}`); assertions++;
     for (const button of metrics.buttons) {
-      assert.ok(button.width >= 48 && button.height >= 48, `48px thumb target at ${width}x${height}: ${JSON.stringify(button)}`); assertions++;
+      assert.ok(button.width >= 60 && button.height >= 60, `60px D-pad thumb target at ${width}x${height}: ${JSON.stringify(button)}`); assertions++;
       assert.ok(button.right <= width && button.bottom <= height, `direction button visible at ${width}x${height}`); assertions++;
+    }
+    for (let i = 0; i < metrics.buttons.length; i++) {
+      for (let j = i + 1; j < metrics.buttons.length; j++) {
+        const a = metrics.buttons[i];
+        const b = metrics.buttons[j];
+        const overlap = a.x < b.right && a.right > b.x && a.y < b.bottom && a.bottom > b.y;
+        assert.equal(overlap, false, `D-pad buttons do not overlap at ${width}x${height}`); assertions++;
+      }
+    }
+    if (width <= 844) {
+      for (const button of metrics.interactive) {
+        assert.ok(button.width >= 48 && button.height >= 48, `48px mobile button at ${width}x${height}: ${JSON.stringify(button)}`); assertions++;
+      }
     }
     const adjacent =
       (width >= 500 && width <= 1200 && height <= 780) ||

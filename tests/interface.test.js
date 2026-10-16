@@ -28,7 +28,7 @@ describe("game interface", () => {
   it("declares scroll locking, touch suppression, and comfortable thumb targets", () => {
     expect(css).toMatch(/html[\s\S]*overflow:\s*hidden/);
     expect(css).toMatch(/body[\s\S]*touch-action:\s*none/);
-    expect(css).toMatch(/\.dpad button[\s\S]*min-width:\s*48px/);
-    expect(css).toMatch(/\.dpad button[\s\S]*min-height:\s*48px/);
+    expect(css).toMatch(/\.dpad button[\s\S]*min-width:\s*60px/);
+    expect(css).toMatch(/\.dpad button[\s\S]*min-height:\s*60px/);
   });
 });

@@ -114,7 +114,7 @@ describe("MusicController", () => {
     const first = FakeContext.instances[0];
     expect(first.gains[0].gain.events[0]).toEqual([
       "set",
-      0.28,
+      0.5,
       first.currentTime,
     ]);
 
@@ -122,7 +122,7 @@ describe("MusicController", () => {
     await controller.setEnabled(true);
     expect(first.gains[0].gain.events.at(-1)).toEqual([
       "target",
-      0.28,
+      0.5,
       first.currentTime,
       0.025,
     ]);
@@ -132,9 +132,31 @@ describe("MusicController", () => {
     const replacement = FakeContext.instances[1];
     expect(replacement.gains[0].gain.events[0]).toEqual([
       "set",
-      0.28,
+      0.5,
       replacement.currentTime,
     ]);
+  });
+
+  it("pauses and resumes the audio context at the same transport position without changing preference", async () => {
+    const { controller, store } = harness();
+    await controller.activate();
+    const context = FakeContext.instances[0];
+    context.currentTime = 14.5;
+    const position = controller.position;
+
+    await controller.setPaused(true);
+
+    expect(context.suspend).toHaveBeenCalledTimes(1);
+    expect(controller.playing).toBe(false);
+    expect(controller.enabled).toBe(true);
+    expect(store.values[MUSIC_KEY]).toBeUndefined();
+    expect(controller.position).toBe(position);
+
+    await controller.setPaused(false);
+
+    expect(context.resume).toHaveBeenCalledTimes(2);
+    expect(controller.playing).toBe(true);
+    expect(controller.position).toBe(position);
   });
 
   it("mutes and unmutes at the current position and persists the preference", async () => {

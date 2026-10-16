@@ -415,8 +415,8 @@ h3 {
 }
 .dpad {
   display: grid;
-  grid-template-columns: repeat(3, 46px);
-  grid-template-rows: repeat(3, 42px);
+  grid-template-columns: repeat(3, 60px);
+  grid-template-rows: repeat(3, 60px);
   gap: 5px;
   justify-content: center;
   touch-action: manipulation;
@@ -425,8 +425,8 @@ h3 {
 .dpad button {
   font-size: 20px;
   border-radius: 7px;
-  min-width: 48px;
-  min-height: 48px;
+  min-width: 60px;
+  min-height: 60px;
   touch-action: none;
 }
 .dpad [data-direction="up"] {
@@ -840,7 +840,7 @@ h3 {
     padding: 0 10px;
   }
   .masthead {
-    height: 40px;
+    height: 48px;
   }
   .music-button {
     position: static;
@@ -862,7 +862,7 @@ h3 {
     gap: 6px;
   }
   .machine {
-    width: min(100%, calc(100svh - 260px));
+    width: min(100%, calc(100svh - 294px));
     max-width: 502px;
   }
   .scoreboard {
@@ -900,8 +900,8 @@ h3 {
     display: none;
   }
   .dpad {
-    grid-template-columns: repeat(3, 56px);
-    grid-template-rows: repeat(2, 48px);
+    grid-template-columns: repeat(3, 64px);
+    grid-template-rows: repeat(2, 60px);
     gap: 5px 8px;
   }
   .dpad [data-direction="up"] {
@@ -925,23 +925,49 @@ h3 {
   }
 }
 
+@media (max-width: 844px) {
+  button {
+    min-width: 48px;
+    min-height: 48px;
+  }
+  .dpad button {
+    min-width: 64px;
+    min-height: 60px;
+  }
+  .game-actions button {
+    min-height: 48px;
+  }
+}
+
+@media (max-width: 499px) {
+  .machine {
+    width: min(100%, calc(100svh - 294px));
+  }
+}
+
+@media (max-width: 499px) and (max-height: 600px) {
+  .machine {
+    width: min(100%, calc(100svh - 336px));
+  }
+}
+
 @media (min-width: 500px) and (max-width: 1200px) and (max-height: 780px),
   (min-width: 1201px) and (max-height: 650px) {
   .arcade {
     padding: 0 8px;
   }
   .masthead {
-    height: 34px;
+    height: 48px;
   }
   .game-layout {
-    height: calc(100svh - 34px);
+    height: calc(100svh - 48px);
     flex-direction: row;
     justify-content: center;
     align-items: center;
     gap: 12px;
   }
   .machine {
-    width: min(calc(100svh - 78px), calc(100vw - 210px));
+    width: min(calc(100svh - 112px), calc(100vw - 210px));
   }
   .machine-footer {
     display: none;
@@ -964,7 +990,7 @@ h3 {
     padding: 3px 7px;
   }
   .game-actions button {
-    min-height: 28px;
+    min-height: 48px;
     font-size: 10px;
   }
 }

@@ -27,9 +27,10 @@ const instrumentAudio = () => {
       this.state = "suspended";
       this.destination = new Node();
       this.started = performance.now();
+      this.elapsed = 0;
       this.listeners = {};
     }
-    get currentTime() { return (performance.now() - this.started) / 1000; }
+    get currentTime() { return this.elapsed + (this.state === "running" ? (performance.now() - this.started) / 1000 : 0); }
     createGain() { return Object.assign(new Node(), { gain: new Param() }); }
     createBiquadFilter() { return Object.assign(new Node(), { frequency: new Param(), Q: new Param() }); }
     createOscillator() {
@@ -39,8 +40,8 @@ const instrumentAudio = () => {
       window.__audio.oscillators.push(oscillator);
       return oscillator;
     }
-    async resume() { this.state = "running"; window.__audio.resumes += 1; this.listeners.statechange?.(); }
-    async suspend() { this.state = "suspended"; window.__audio.suspends += 1; this.listeners.statechange?.(); }
+    async resume() { if (this.state !== "running") this.started = performance.now(); this.state = "running"; window.__audio.resumes += 1; this.listeners.statechange?.(); }
+    async suspend() { if (this.state === "running") this.elapsed = this.currentTime; this.state = "suspended"; window.__audio.suspends += 1; this.listeners.statechange?.(); }
     addEventListener(type, callback) { this.listeners[type] = callback; }
   }
   window.AudioContext = TestAudioContext;
@@ -64,25 +65,37 @@ try {
     });
     await page.goto(base, { waitUntil: "networkidle" });
     assert.equal(await page.evaluate(() => window.__audio.contexts), 0, `no autoplay at ${width}x${height}`); assertions++;
-    await page.getByRole("button", { name: "Start Game", exact: true }).click();
+    const start = page.getByRole("button", { name: "Start Game", exact: true });
+    if (width <= 844) {
+      const box = await start.boundingBox();
+      assert.ok(box, `Start Game is visible at ${width}x${height}`);
+      await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+    } else await start.click();
     assert.equal(await page.evaluate(() => window.__audio.contexts), 1, `one music context after interaction at ${width}x${height}`); assertions++;
     const state = () => page.evaluate(async () => {
       const { game, music } = await import("./app.js");
       return { status: game.status, direction: game.direction, turns: game.turns, musicPosition: music.position };
     });
     assert.equal((await state()).status, "running"); assertions++;
-    await page.getByRole("button", { name: "Move up", exact: true }).click();
-    await page.getByRole("button", { name: "Move down", exact: true }).click();
+    await page.evaluate(() => {
+      document.querySelector('[data-direction="up"]').click();
+      document.querySelector('[data-direction="down"]').click();
+    });
     let current = await state();
     assert.ok(
       (current.direction.y === -1 && current.turns.length === 0) ||
         (current.turns.length === 1 && current.turns[0].y === -1),
-      `immediate touch reversal rejected at ${width}x${height}`,
+      `immediate touch reversal rejected at ${width}x${height}: ${JSON.stringify(current)}`,
     ); assertions++;
     assert.ok(current.turns.every((turn) => turn.y !== 1), `opposite turn was not queued at ${width}x${height}`); assertions++;
     await page.getByRole("button", { name: "Restart", exact: true }).click();
     await page.getByRole("button", { name: "Pause", exact: false }).click();
+    const pausedAudio = await state();
+    await page.waitForTimeout(120);
+    assert.equal(await page.evaluate(() => window.__audio.suspends), 1, `game pause suspends music at ${width}x${height}`); assertions++;
+    assert.equal((await state()).musicPosition, pausedAudio.musicPosition, `game pause freezes music transport at ${width}x${height}`); assertions++;
     await page.getByRole("button", { name: "Resume", exact: true }).click();
+    assert.equal(await page.evaluate(async () => (await import("./app.js")).music.playing), true, `game resume restarts enabled music at ${width}x${height}`); assertions++;
     assert.equal(await page.evaluate(() => window.__audio.contexts), 1, `restart/pause do not duplicate music at ${width}x${height}`); assertions++;
     const boxes = await page.evaluate(() => ({
       scrollWidth: document.documentElement.scrollWidth,

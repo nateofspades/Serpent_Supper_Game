@@ -3,7 +3,7 @@
 export const MUSIC_KEY = "neon-snake-music";
 const LOOP_SECONDS = 8;
 const STEP = 0.25;
-const MASTER_VOLUME = 0.28;
+const MASTER_VOLUME = 0.5;
 const BASS = [55, 55, 65.41, 55, 73.42, 65.41, 49, 49];
 const LEAD = [440, 523.25, 659.25, 783.99, 659.25, 523.25, 493.88, 392];
 
@@ -25,6 +25,7 @@ export class MusicController {
     this.master = null;
     this.timer = null;
     this.activated = false;
+    this.paused = false;
     this.nextStep = 0;
     this.offset = 0;
     this.timelineOrigin = 0;
@@ -49,7 +50,11 @@ export class MusicController {
 
   get playing() {
     return Boolean(
-      this.context && this.context.state === "running" && this.enabled,
+      this.context &&
+      this.context.state === "running" &&
+      this.enabled &&
+      !this.paused &&
+      !this.getHidden(),
     );
   }
 
@@ -64,7 +69,7 @@ export class MusicController {
 
   async activate() {
     this.activated = true;
-    if (!this.enabled || this.getHidden()) return;
+    if (!this.enabled || this.paused || this.getHidden()) return;
     await this.#ensureContext();
   }
 
@@ -85,14 +90,27 @@ export class MusicController {
         0.025,
       );
     }
-    if (this.enabled && this.activated && !this.getHidden())
+    if (this.enabled && this.activated && !this.paused && !this.getHidden())
       await this.#ensureContext();
     return this.enabled;
   }
 
+  async setPaused(paused) {
+    this.paused = Boolean(paused);
+    if (this.paused) {
+      if (this.context?.state === "running") {
+        this.offset = this.position;
+        this.timelineOrigin = this.context.currentTime;
+        await this.context.suspend().catch(() => {});
+      }
+    } else if (this.enabled && this.activated && !this.getHidden()) {
+      await this.#ensureContext();
+    }
+  }
+
   async handleVisibility() {
     if (!this.context || this.context.state === "closed") {
-      if (!this.getHidden() && this.enabled && this.activated)
+      if (!this.getHidden() && this.enabled && this.activated && !this.paused)
         await this.#ensureContext();
       return;
     }
@@ -101,13 +119,14 @@ export class MusicController {
       this.timelineOrigin = this.context.currentTime;
       if (this.context.state === "running")
         await this.context.suspend().catch(() => {});
-    } else if (this.enabled && this.activated) {
+    } else if (this.enabled && this.activated && !this.paused) {
       await this.context.resume().catch(() => {});
     }
   }
 
   async handleInterruption() {
-    if (!this.enabled || !this.activated || this.getHidden()) return;
+    if (!this.enabled || !this.activated || this.paused || this.getHidden())
+      return;
     await this.#ensureContext();
   }
 
@@ -132,8 +151,7 @@ export class MusicController {
         this.timelineOrigin = this.context.currentTime;
         this.#resetSchedule();
         this.context.addEventListener?.("statechange", () => {
-          if (this.context?.state === "interrupted")
-            this.context.resume().catch(() => {});
+          if (this.context?.state === "interrupted") this.handleInterruption();
         });
         this.timer = this.setTimer(() => this.#schedule());
       } catch {
