@@ -1,6 +1,8 @@
-# Neon Snake
+# Neon Snake — private preparation
 
-**Play now:** https://nateofspades.github.io/neon_snake_game/
+**Not published or cleared for release.** This is the existing game, not a redraw. Art, engine, music, keyboard/touch controls, no-page-scroll layout and `neon-snake-best` / `neon-snake-music` are preserved. Proposed branding/URL is only in `docs/private-migration.md`. Historical evidence below predates this preparation; current results are `/root/arcade-migration-audit/preparation/snake-*`.
+
+In the shared audit environment all servers/tests must use `flock /root/arcade-migration-audit/preparation/test.lock`. Avoid the original server on port 8080: run `python3 -m http.server 4380 --bind 127.0.0.1` in this worktree, then test with `BASE_URL=http://127.0.0.1:4380 npm run test:all`. Unit-only: `npm test`. Browser suites are executable Node scripts, not Vitest files. No build step exists. Candidate runtime consists only of `index.html`, `styles.css`, `app.js`, `engine.js`, `music.js`, `favicon.svg` and `LICENSE`; exclude tests/evidence/private docs. The original MIT assertions below are not independent chain-of-title clearance.
 
 A responsive, browser-only arcade Snake game built with HTML, CSS, Canvas, and vanilla JavaScript. It has no accounts, tracking, ads, backend, or runtime dependencies.
 
