@@ -29,7 +29,7 @@ Each red food pickup adds 10 points and one body segment. The 24 × 24 board sta
 
 **Neon Circuit** is the original instrumental synthwave/electronic background score composed programmatically for this project. It is synthesized at runtime with the Web Audio API; it contains no samples, recordings, generated audio files, or third-party musical assets. Copyright © 2026 Nathan Burns and licensed under this repository's MIT License.
 
-Music starts only after a user interaction. **Music on / off** is persisted under `neon-snake-music`; muting preserves the loop position. The single music controller continues independently of game start, pause, restart, menu, game over, resize, and orientation changes, and handles page visibility, interrupted audio, unavailable Web Audio, and closed contexts without creating simultaneous duplicate tracks. Food, loss, and button sound effects are intentionally absent.
+Music starts only after a user interaction. **Music on / off** is persisted under `neon-snake-music`; muting preserves the loop position. The single music controller is reused across start, restart, menu, game over, resize and orientation changes. Gameplay pause suspends the existing audio context at its current transport position; Resume continues that context without changing the enabled preference. Page visibility and interrupted/closed/unavailable audio are handled without creating simultaneous duplicate tracks. Food, loss, and button sound effects are intentionally absent.
 
 ## Run locally
 
