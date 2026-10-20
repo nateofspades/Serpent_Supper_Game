@@ -1,5 +1,7 @@
 # Private migration proposal — NOT publication authorization
 
+Historical planning only, superseded by the owner's explicit final release authorization for **Serpent Supper**, `nateofspades/Serpent_Supper_Game`, https://nateofspades.github.io/Serpent_Supper_Game/. The candidate name and hold below are retained as history, not current instructions. See README and IP_AUDIT.md for final identity and release assessment.
+
 Current neutral review title: **Neon Snake**. Proposed later title: **Neon Serpent**.
 Proposed repository: `nateofspades/Neon_Serpent_Game`.
 Proposed URL: `https://nateofspades.github.io/Neon_Serpent_Game/`.

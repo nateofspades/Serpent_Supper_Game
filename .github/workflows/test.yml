@@ -24,21 +24,54 @@ jobs:
         run: npm test
       - name: Start static server
         run: |
-          python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/neon-snake-server.log 2>&1 &
+          python3 -m http.server 4380 --bind 127.0.0.1 > /tmp/neon-snake-server.log 2>&1 &
           echo $! > /tmp/neon-snake-server.pid
           for attempt in {1..20}; do
-            curl --fail --silent http://127.0.0.1:8080/ > /dev/null && exit 0
+            curl --fail --silent http://127.0.0.1:4380/ > /dev/null && exit 0
             sleep 1
           done
           cat /tmp/neon-snake-server.log
           exit 1
       - name: Run browser integration tests
+        env:
+          BASE_URL: http://127.0.0.1:4380/
         run: npm run test:browser
       - name: Run responsive layout tests
+        env:
+          BASE_URL: http://127.0.0.1:4380/
         run: npm run test:layout
+      - name: Run release acceptance including native audio
+        env:
+          BASE_URL: http://127.0.0.1:4380/
+        run: npm run test:acceptance
       - name: Stop static server
         if: always()
         run: |
           if [ -f /tmp/neon-snake-server.pid ]; then
             kill "$(cat /tmp/neon-snake-server.pid)" 2>/dev/null || true
           fi
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Package runtime only, preserving legal notices
+        run: |
+          mkdir -p _site/assets
+          cp index.html styles.css app.js engine.js music.js favicon.svg LICENSE .nojekyll _site/
+          cp assets/gameplay.png _site/assets/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
