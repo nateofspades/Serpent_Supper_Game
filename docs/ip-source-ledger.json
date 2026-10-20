@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": 1,
+      "url": "https://en.wikipedia.org/wiki/File:Snake-nokia-phone.jpg",
+      "title": "",
+      "accessed": "2026-10-20"
+    },
+    {
+      "id": 2,
+      "url": "https://www.moma.org/artists/134524",
+      "title": "",
+      "accessed": "2026-10-20"
+    },
+    {
+      "id": 3,
+      "url": "https://www.moma.org/collection/works/196072",
+      "title": "",
+      "accessed": "2026-10-20"
+    }
+  ]
+}

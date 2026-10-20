@@ -196,6 +196,8 @@ document.addEventListener("keydown", (event) => {
     if (!event.repeat) game.turn(direction);
   }
   if (event.code === "Space") {
+    // Preserve native keyboard activation of focused interactive controls.
+    if (event.target.closest?.("button, a, input, select, textarea, [contenteditable]")) return;
     event.preventDefault();
     if (!event.repeat) pause();
   }

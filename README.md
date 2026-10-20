@@ -1,23 +1,29 @@
-# Neon Snake — private preparation
+# Serpent Supper
 
-[Older live deployment](https://nateofspades.github.io/neon_snake_game/) — the legacy site, not this private branch or an approved new URL.
+[Play Serpent Supper](https://nateofspades.github.io/Serpent_Supper_Game/)
 
 ![Actual Snake gameplay with music and directional controls](assets/gameplay.png)
 
-**Not published or cleared for release.** This is the existing game, not a redraw. Art, engine, music, keyboard/touch controls, no-page-scroll layout and `neon-snake-best` / `neon-snake-music` are preserved. Proposed branding/URL is only in `docs/private-migration.md`. Historical evidence below predates this preparation; current results are `/root/arcade-migration-audit/preparation/snake-*`.
+Eat, grow, and leave yourself a way out. A responsive browser-only arcade game with a 24 × 24 arena, rounded luminous snake, glowing food, personal bests, large touch controls and an instrumental electronic score. No accounts, ads, tracking, backend or runtime dependencies.
 
-Private verification completed locally: **18 Vitest tests across 3 files, 71 gameplay/music/touch/storage/network/console assertions across six viewports plus the complete mobile-music script, and 772 layout assertions across 20 viewports passed**. Four new actual-started/moved gameplay captures also passed. The separate capture harness advances the real browser RAF for 200 ms, then freezes the browser clock only while encoding screenshots; normal browser/music/layout tests use their existing unmodified timing. The original slow-encoding capture failure remains preserved in the external audit. No engine state, score or positions were injected. The image above was refreshed from the private-worktree capture.
+The screenshot above is captured from an actually started and moved game, without injected scores or positions. The capture harness freezes time only during image encoding; separate native Web Audio tests use the real clock and signal. See [TESTING.md](TESTING.md) for reproducible coverage and limitations and [the IP assessment](docs/IP_AUDIT.md) for provenance, licensing and comparison evidence. No legal clearance or physical-device/speaker certification is claimed.
 
-In the shared audit environment all servers/tests must use `flock /root/arcade-migration-audit/preparation/test.lock`. Avoid the original server on port 8080: run `python3 -m http.server 4380 --bind 127.0.0.1` in this worktree, then test with `BASE_URL=http://127.0.0.1:4380 npm run test:all`. Unit-only: `npm test`. Browser suites are executable Node scripts, not Vitest files. No build step exists. Candidate runtime consists only of `index.html`, `styles.css`, `app.js`, `engine.js`, `music.js`, `favicon.svg` and `LICENSE`; exclude tests/evidence/private docs. The original MIT assertions below are not independent chain-of-title clearance.
+No build step is needed. Pages deploys an allowlisted static runtime: `index.html`, `styles.css`, `app.js`, `engine.js`, `music.js`, `favicon.svg`, `.nojekyll`, `LICENSE` and the own gameplay image. Tests, tooling, private preparation documents and external evidence are not deployed.
 
-A responsive, browser-only arcade Snake game built with HTML, CSS, Canvas, and vanilla JavaScript. It has no accounts, tracking, ads, backend, or runtime dependencies.
+## Features
+
+- Food adds 10 points and a body segment; pace rises as the snake grows.
+- Wall/self collision ends a round; filling the board wins.
+- Pause/resume, instant restart, two buffered legal turns and no direct reversals.
+- Persisted personal best and music preference, with session-only fallback when storage is blocked.
+- Portrait/landscape D-pad and viewport-fit arena; no page scrolling during play.
 
 ## Controls
 
 ### Desktop
 
 - Select **Start Game**, then steer with the **arrow keys** or **WASD**.
-- Press **Space** or select **Pause / Resume** to pause and continue.
+- Press **Space** with gameplay focus or select **Pause / Resume** to pause and continue. On a focused button, Space activates that button normally.
 - **Restart** begins a new run immediately; **Play Again** starts over after a loss.
 - Direct reversals are rejected. Up to two legal turns can be buffered and are applied one per game tick.
 
@@ -43,7 +49,7 @@ The game itself needs only a static HTTP server because it uses native ES module
 python3 -m http.server 4380 --bind 127.0.0.1
 ```
 
-Open <http://127.0.0.1:4380/>. No build step is required. In this shared audit use the lock-owning verification orchestrator rather than holding a server lock in one terminal while trying to acquire a second test lock.
+Open <http://127.0.0.1:4380/>. `npm run serve` starts the same loopback-only server. Use your own server, not an unrelated checkout on another port.
 
 ## Install and test
 
@@ -66,11 +72,10 @@ BASE_URL=http://127.0.0.1:4380 npm run test:all
 
 On minimal Linux installations, use `npx playwright install --with-deps chromium`. Browser coverage is Chromium and mobile coverage uses browser touch emulation, not physical-device certification. See [TESTING.md](TESTING.md) for the test matrix and current verification details.
 
-Use the dedicated private-worktree base explicitly, never an unrelated original server:
+The expanded six-viewport acceptance suite, including native audio, can run separately:
 
 ```sh
-BASE_URL=http://127.0.0.1:4380 npm run test:browser
-BASE_URL=http://127.0.0.1:4380 npm run test:layout
+BASE_URL=http://127.0.0.1:4380 npm run test:acceptance
 ```
 
 ## Project files
@@ -83,7 +88,7 @@ BASE_URL=http://127.0.0.1:4380 npm run test:layout
 - `tests/*.test.js` — Vitest unit/interface tests and Playwright browser/layout suites.
 - `.github/workflows/test.yml` — CI for pushes to `main` and pull requests.
 
-All game references use relative URLs (`./app.js`, `./music.js`, `./styles.css`, and `./favicon.svg`); the README image is `assets/gameplay.png`. A future hosted subpath must be verified after separate authorization. No proposed renamed site is published by this private preparation. `.nojekyll` remains unchanged.
+All game references use relative URLs (`./app.js`, `./music.js`, `./styles.css`, and `./favicon.svg`); the README image is `assets/gameplay.png`. The final hosted path is [Serpent_Supper_Game](https://nateofspades.github.io/Serpent_Supper_Game/). Origin-wide legacy storage keys are retained for the path-only move; seeded path compatibility tests are not proof of real-user migration.
 
 ## Browser notes
 
@@ -91,4 +96,4 @@ Canvas 2D, ES modules, CSS Grid, and Web Audio are used where available. If loca
 
 ## Technology and credits
 
-The existing [MIT notice](LICENSE) credits **Nathan Burns (2026)**; it is preserved, not replaced with a new general license. The geometric art, engine and **Neon Circuit** implementation remain unchanged. Contributor/chain-of-title and name-use decisions remain separate release gates. Runtime code is native HTML/CSS/ES modules, Canvas and Web Audio with no framework or backend. Vitest, Playwright, jsdom and Prettier are development/test dependencies; do not bundle their installations, tests, browser binaries or private migration documents as runtime content.
+The existing [MIT notice](LICENSE) credits **Nathan Burns (2026)**; it is preserved, not replaced with a new general license. The geometric art, engine and **Neon Circuit** implementation are retained. Git history includes assisted initial creation; authorship notices are not independent proof of chain of title or musical originality. See [docs/IP_AUDIT.md](docs/IP_AUDIT.md). Runtime code is native HTML/CSS/ES modules, Canvas and Web Audio with no framework or backend. Vitest, Playwright, jsdom and Prettier are development/test dependencies with their own licenses, inventoried in [docs/dependency-license-inventory.json](docs/dependency-license-inventory.json). Do not redistribute their installations or browser binaries under the game's MIT notice.

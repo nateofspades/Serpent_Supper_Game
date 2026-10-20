@@ -90,7 +90,7 @@ button:disabled {
 }
 .brand > span:last-child {
   color: var(--green);
-  margin-left: -9px;
+  margin-left: 0;
 }
 .brand-mark {
   background: var(--green);
@@ -926,6 +926,9 @@ h3 {
 }
 
 @media (max-width: 844px) {
+  .music-button {
+    align-self: flex-start;
+  }
   button {
     min-width: 48px;
     min-height: 48px;

@@ -1,15 +1,16 @@
 {
-  "name": "neon-snake",
+  "name": "serpent-supper",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "vitest run --maxWorkers=1 tests/engine.test.js tests/music.test.js tests/interface.test.js",
-    "test:unit": "vitest run --maxWorkers=1 tests/engine.test.js tests/music.test.js tests/interface.test.js",
+    "test": "vitest run --maxWorkers=1 tests/engine.test.js tests/music.test.js tests/interface.test.js tests/serpent-identity.test.js",
+    "test:unit": "npm test",
     "test:browser": "node tests/browser.test.js && node tests/mobile-music.test.js",
     "test:layout": "node tests/layout.test.js",
-    "test:all": "npm run test:unit && npm run test:browser && npm run test:layout",
-    "serve": "python3 -m http.server 8080"
+    "test:acceptance": "node tests/run-acceptance.mjs",
+    "test:all": "npm run test:unit && npm run test:browser && npm run test:layout && npm run test:acceptance",
+    "serve": "python3 -m http.server 4380 --bind 127.0.0.1"
   },
   "devDependencies": {
     "jsdom": "^26.1.0",
